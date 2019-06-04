@@ -14,6 +14,10 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
     Other links:
     https://moments.epic.net/#home
     https://threejs.org/
+    https://experiments.withgoogle.com/konterball
+    https://konterball.com/
+    https://normanvr.com/#animatedshort
+    GET GTLFs https://threejs.org/examples/misc_exporter_gltf.html
    */
 
   public renderer: any;
