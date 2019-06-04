@@ -9,6 +9,13 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 })
 export class Threebeginners1Component implements OnInit, AfterViewInit {
 
+  /*
+    Based on https://medium.com/@PavelLaptev/three-js-for-beginers-32ce451aabda
+    Other links:
+    https://moments.epic.net/#home
+    https://threejs.org/
+   */
+
   public renderer: any;
   public scene: any;
   public light: any;
