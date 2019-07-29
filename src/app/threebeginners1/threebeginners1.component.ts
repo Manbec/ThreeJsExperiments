@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {forEachComment} from 'tslint';
 
 @Component({
   selector: 'app-threebeginners1',
@@ -77,8 +78,6 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
 
-    console.log("INIT CAM");
-    console.log(this.camera);
     this.camera.position.set(100, -400, 2000);
     // adding camera to the scene
     this.scene.add(this.camera);
@@ -100,7 +99,7 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
     this.createDiamond();
     this.createSpace();
 
-    //adding scene and camera to the render
+    // adding scene and camera to the render
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -108,11 +107,11 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
 
     this.spheres = new THREE.Object3D();
 
-//create array with any links
-    var arr = ['https://link',
-      'https://link',
-      'https://link',
-      'https://link'];
+// create array with any links
+    let arr = ['https://en.wikipedia.org/wiki/Sphere',
+      'https://en.wikipedia.org/wiki/Ellipse',
+      'https://en.wikipedia.org/wiki/Ellipsoid',
+      'https://en.wikipedia.org/wiki/Spheroid'];
 
     for (let i = 0; i < 80; i++) {
       const sphere = new THREE.SphereGeometry(4, Math.random() * 12, Math.random() * 12);
@@ -145,8 +144,11 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
   }
 
   createDiamond() {
-    //create a group container
+    // create a group container
     this.diamondsGroup = new THREE.Object3D();
+
+    // create array with any links
+    let arr = ['https://en.wikipedia.org/wiki/Walter_W._Head'];
 
     // setting up loader for a model
     const loader = new GLTFLoader();
@@ -156,25 +158,28 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
       for (let i = 0; i < 60; i++) {
         const material = new THREE.MeshPhongMaterial({
           color: Math.random() * 0xff00000 - 0xff00000,
-          //shading: THREE.FlatShading
+          // shading: THREE.FlatShading
         });
-
         const diamond = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
         diamond.position.x = Math.random() * -this.helperDistance * 6 + 1400;
         diamond.position.y = Math.random() * -this.helperDistance * 2;
         diamond.position.z = Math.random() * this.helperDistance * 3;
         diamond.rotation.y = Math.random() * 2 * Math.PI;
-        diamond.scale.x = diamond.scale.y = diamond.scale.z = (Math.random() * 1 + 10)*0.3;
+        diamond.scale.x = diamond.scale.y = diamond.scale.z = (Math.random() * 1 + 10) * 0.3;
+
+        // and randomly push it into userData object
+        diamond.userData = {
+          URL: arr[Math.floor(Math.random() * arr.length)]
+        };
 
         this.diamondsGroup.add(diamond);
 
-        //this.scene.add(diamond);
+        // this.scene.add(diamond);
       }
 
       this.diamondsGroup.position.x = 1400;
       this.scene.add(this.diamondsGroup);
-      console.log("CHILDRAAAN DIAMAND");
-      console.log(this.diamondsGroup.children);
+
       // we will delete this line later
       this.renderer.render(this.scene, this.camera);
 
@@ -250,6 +255,15 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
       window.open(intersects[0].object.userData.URL);
     }
 
+    const diamondsChildrenMesh = [];
+    for (const child of this.diamondsGroup.children) {
+      diamondsChildrenMesh.push(child.children[0]);
+    }
+    const intersectsDiamonds = this.raycaster.intersectObjects(diamondsChildrenMesh);
+    if (intersectsDiamonds.length > 0) {
+      // get a link from the userData object
+      window.open(this.diamondsGroup.children[0].userData.URL);
+    }
   }
 
   animate = () => {
@@ -275,15 +289,39 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    const intersects = this.raycaster.intersectObjects(this.spheres.children);
-    //console.log("INTASAC");
-    //console.log(intersects);
-    if (intersects.length > 0) {
-      if (this.INTERSECTED !== intersects[0].object) {
+    const intersectsSpheres = this.raycaster.intersectObjects(this.spheres.children);
+    // console.log("intersectsSpheres");
+    // console.log(intersectsSpheres);
+    if (intersectsSpheres.length > 0) {
+      if (this.INTERSECTED !== intersectsSpheres[0].object) {
         if (this.INTERSECTED) {
           this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
         }
-        this.INTERSECTED = intersects[0].object;
+        this.INTERSECTED = intersectsSpheres[0].object;
+        this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
+        this.INTERSECTED.material.emissive.setHex(Math.random() * 0xff00000 - 0xff00000);
+      }
+    } else {
+      if (this.INTERSECTED) {
+        this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+      }
+      this.INTERSECTED = null;
+    }
+
+    const diamondsChildrenMesh = [];
+    for (const child of this.diamondsGroup.children) {
+      diamondsChildrenMesh.push(child.children[0]);
+    }
+    const intersectsDiamonds = this.raycaster.intersectObjects(diamondsChildrenMesh);
+    //console.log('intersectsDiamonds');
+    //console.log(diamondsChildrenMesh);
+    //console.log(intersectsDiamonds);
+    if (intersectsDiamonds.length > 0) {
+      if (this.INTERSECTED !== intersectsDiamonds[0].object) {
+        if (this.INTERSECTED) {
+          this.INTERSECTED.material.emissive.setHex(this.INTERSECTED.currentHex);
+        }
+        this.INTERSECTED = intersectsDiamonds[0].object;
         this.INTERSECTED.currentHex = this.INTERSECTED.material.emissive.getHex();
         this.INTERSECTED.material.emissive.setHex(Math.random() * 0xff00000 - 0xff00000);
       }
