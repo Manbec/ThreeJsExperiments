@@ -43,11 +43,11 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   // Helper var which we will use as a additional correction coefficient for objects and camera
   public helperDistance = 10;
 
-  // spheres vars
-  public spheres: any;
-
   // diamonds vars
   public waltGroup: any;
+  public waltHead: any;
+  public waltRightHand: any;
+  public waltLeftHand: any;
 
   // dots vars
   public dots: any;
@@ -64,6 +64,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     window.addEventListener('resize', this.onWindowResize, false);
     document.addEventListener('mousemove', this.onMouseMove, false);
     document.addEventListener('mousedown', this.onDocumentMouseDown, false);
+
+    this.GameLoop();
   }
 
   initScene() {
@@ -126,36 +128,83 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
     // setting up loader for a model
     const loader = new GLTFLoader();
-
     // load model and clone it
     loader.load('assets/3Dmodels/walthead.gltf', (geometry) => {
       const material = new MeshToonMaterial({
         color: Math.random() * 0xff00000 - 0xff00000,
         // shading: THREE.FlatShading
       });
-      const diamond = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
-      diamond.position.x = 0;
-      diamond.position.y = 0;
-      diamond.position.z = 0;
-      diamond.rotation.y = Math.PI * 1.5;
-      diamond.scale.x = diamond.scale.y = diamond.scale.z = (Math.random() * 1 + 10) * 0.3;
+
+      const waltHead = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
+      waltHead.position.x = 0;
+      waltHead.position.y = 0;
+      waltHead.position.z = 0;
+      waltHead.rotation.y = Math.PI * 1.5;
+      waltHead.scale.x = waltHead.scale.y = waltHead.scale.z = (Math.random() * 1 + 10) * 0.3;
 
       // and randomly push it into userData object
-      diamond.userData = {
+      waltHead.userData = {
         name: 'Pawge'
       };
+      this.waltHead = waltHead;
+      this.waltGroup.add(waltHead);
 
-      this.waltGroup.add(diamond);
 
-      // this.scene.add(diamond);
-
-      this.waltGroup.position.x = this.mainPlaneWidth/2;
-      this.scene.add(this.waltGroup);
+      // this.scene.add(waltHead);
 
       // we will delete this line later
       this.renderer.render(this.scene, this.camera);
 
     });
+
+    // load walthead and clone it
+    loader.load('assets/3Dmodels/hand/hand.gltf', (geometry) => {
+      const material = new MeshToonMaterial({
+        color: Math.random() * 0xff00000 - 0xff00000,
+        // shading: THREE.FlatShading
+      });
+      console.log("HANDOU");
+      console.log( geometry.scene.children[0]);
+      const waltHandLeft = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
+      waltHandLeft.position.x = this.mainPlaneWidth;
+      waltHandLeft.position.y = 1200;
+      waltHandLeft.position.z = 500;
+      waltHandLeft.rotation.y = Math.PI * 1.5;
+      waltHandLeft.scale.x = waltHandLeft.scale.y = waltHandLeft.scale.z = (Math.random() * 1 + 10) * 0.6;
+
+      // and randomly push it into userData object
+      waltHandLeft.userData = {
+        name: 'Pawge'
+      };
+      this.waltLeftHand = waltHandLeft;
+
+      this.waltGroup.add(waltHandLeft);
+
+      const waltHandRight = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
+      waltHandRight.position.x = this.mainPlaneWidth;
+      waltHandRight.position.y = 1200;
+      waltHandRight.position.z = -500;
+      waltHandRight.rotation.y = Math.PI * 1.5;
+      waltHandRight.scale.x = waltHandRight.scale.y = waltHandRight.scale.z = (Math.random() * 1 + 10) * 0.6;
+
+      // and randomly push it into userData object
+      waltHandRight.userData = {
+        name: 'Pawge'
+      };
+      this.waltRightHand = waltHandRight;
+
+      this.waltGroup.add(waltHandRight);
+
+      this.waltGroup.position.x = this.mainPlaneWidth / 2;
+      this.scene.add(this.waltGroup);
+
+
+      // we will delete this line later
+      this.renderer.render(this.scene, this.camera);
+
+    });
+
+
   }
 
   onWindowResize = () => {
@@ -194,6 +243,28 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   }
   render() {
     this.renderer.render(this.scene, this.camera);
+  }
+
+
+  // game logic
+  update() {
+    if (this.waltHead) {
+      this.waltHead.rotation.x += 0.01;
+      this.waltHead.rotation.y += 0.005;
+    }
+    if (this.waltRightHand && this.waltLeftHand) {
+      this.waltRightHand.rotation.x += 0.01;
+      this.waltRightHand.rotation.y += 0.005;
+      this.waltLeftHand.rotation.x += 0.01;
+      this.waltLeftHand.rotation.y += 0.005;
+    }
+  }
+
+  // run game loop (update, render, repeat)
+  GameLoop = () => {
+    requestAnimationFrame(this.GameLoop);
+    this.update();
+    this.render();
   }
 
 }
