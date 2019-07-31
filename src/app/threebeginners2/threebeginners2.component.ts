@@ -12,6 +12,8 @@ import {MeshBasicMaterial, MeshLambertMaterial, MeshPhysicalMaterial, MeshToonMa
 })
 export class Threebeginners2Component implements OnInit, AfterViewInit {
 
+  scene = new THREE.Scene();
+
   /*
     Based on https://medium.com/@PavelLaptev/three-js-for-beginers-32ce451aabda
     Other links:
@@ -55,6 +57,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
+    window.scene = this.scene;
+    window.parent.THREE = THREE;
   }
 
   ngAfterViewInit() {
@@ -79,7 +83,6 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.container.appendChild(this.renderer.domElement);
 
     // init scene, camera and camera position
-    this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.2, 25000);
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
@@ -106,6 +109,9 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.createSpace();
 
     // adding scene and camera to the render
+    console.log("siiin");
+    console.log(this.scene);
+
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -134,7 +140,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
         color: Math.random() * 0xff00000 - 0xff00000,
         // shading: THREE.FlatShading
       });
-
+      console.log("walthead", geometry.scene.clone(true).children[0]);
       const waltHead = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
       waltHead.position.x = 0;
       waltHead.position.y = 0;
@@ -149,38 +155,54 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       this.waltHead = waltHead;
       this.waltGroup.add(waltHead);
 
-
-      // this.scene.add(waltHead);
+      this.scene.add(waltHead);
 
       // we will delete this line later
       this.renderer.render(this.scene, this.camera);
 
     });
 
-    // load walthead and clone it
-    loader.load('assets/3Dmodels/hand/hand.gltf', (geometry) => {
+    // load walthand and clone it
+    loader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
       const material = new MeshToonMaterial({
         color: Math.random() * 0xff00000 - 0xff00000,
         // shading: THREE.FlatShading
       });
+
+      this.scene.add(geometry.scene.children[0]);
+      this.renderer.render(this.scene, this.camera);
+      return;
       console.log("HANDOU");
-      console.log( geometry.scene.children[0]);
-      const waltHandLeft = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
-      waltHandLeft.position.x = this.mainPlaneWidth;
-      waltHandLeft.position.y = 1200;
-      waltHandLeft.position.z = 500;
-      waltHandLeft.rotation.y = Math.PI * 1.5;
-      waltHandLeft.scale.x = waltHandLeft.scale.y = waltHandLeft.scale.z = (Math.random() * 1 + 10) * 0.6;
+      console.log( geometry.scene.children[0].children[0].children[0].children[0]);
+      var waltHand = geometry.scene.children[0].children[0].children[0].children[0];
+      const waltHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      //console.log(waltHandLeft.children.splice(2, 1));
+      console.log('walhanlef', waltHandLeft);
+
+      const mesh = waltHand;
+      const skeleton = new THREE.Skeleton(waltHand.children[0].children);
+      //mesh.add(waltHand.children[0].children[0]);
+      //mesh.bind(skeleton);
+
+      console.log("mosh", mesh);
+
+      /*mesh.position.x = this.mainPlaneWidth;
+      mesh.position.y = 1200;
+      mesh.position.z = 500;
+      mesh.rotation.y = Math.PI * 1.5;
+      mesh.scale.x = mesh.scale.y = mesh.scale.z = (Math.random() * 1 + 10) * 0.6;
 
       // and randomly push it into userData object
       waltHandLeft.userData = {
         name: 'Pawge'
-      };
-      this.waltLeftHand = waltHandLeft;
+      };*/
+      this.waltLeftHand = mesh;
 
-      this.waltGroup.add(waltHandLeft);
+      this.waltGroup.add(mesh);
 
-      const waltHandRight = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
+      const waltHandRight = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      console.log('walhanlef', waltHandLeft);
+      waltHandRight.children.splice(2, 1);
       waltHandRight.position.x = this.mainPlaneWidth;
       waltHandRight.position.y = 1200;
       waltHandRight.position.z = -500;
@@ -193,7 +215,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       };
       this.waltRightHand = waltHandRight;
 
-      this.waltGroup.add(waltHandRight);
+      //this.waltGroup.add(waltHandRight);
 
       this.waltGroup.position.x = this.mainPlaneWidth / 2;
       this.scene.add(this.waltGroup);
@@ -252,19 +274,19 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       this.waltHead.rotation.x += 0.01;
       this.waltHead.rotation.y += 0.005;
     }
-    if (this.waltRightHand && this.waltLeftHand) {
+    /*if (this.waltRightHand && this.waltLeftHand) {
       this.waltRightHand.rotation.x += 0.01;
       this.waltRightHand.rotation.y += 0.005;
       this.waltLeftHand.rotation.x += 0.01;
       this.waltLeftHand.rotation.y += 0.005;
-    }
+    }*/
   }
 
   // run game loop (update, render, repeat)
   GameLoop = () => {
     requestAnimationFrame(this.GameLoop);
-    this.update();
-    this.render();
+    //this.update();
+    //this.render();
   }
 
 }
