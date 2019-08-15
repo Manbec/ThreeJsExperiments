@@ -3,7 +3,16 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {forEachComment} from 'tslint';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import {MeshBasicMaterial, MeshLambertMaterial, MeshPhysicalMaterial, MeshToonMaterial, TextureLoader} from 'three';
+import {
+  Bone,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  MeshPhysicalMaterial,
+  MeshToonMaterial,
+  Scene,
+  SkinnedMesh,
+  TextureLoader
+} from 'three';
 
 @Component({
   selector: 'app-threebeginners2',
@@ -11,8 +20,6 @@ import {MeshBasicMaterial, MeshLambertMaterial, MeshPhysicalMaterial, MeshToonMa
   styleUrls: ['./threebeginners2.component.css']
 })
 export class Threebeginners2Component implements OnInit, AfterViewInit {
-
-  scene = new THREE.Scene();
 
   /*
     Based on https://medium.com/@PavelLaptev/three-js-for-beginers-32ce451aabda
@@ -26,7 +33,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
    */
 
   public renderer: any;
-  public scene: any;
+  public scene: Scene = new THREE.Scene();
   public mainPlane: any;
   public mainPlaneWidth = 3000;
   public light: any;
@@ -47,6 +54,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
   // diamonds vars
   public waltGroup: any;
+  public handGroup: any;
   public waltHead: any;
   public waltRightHand: any;
   public waltLeftHand: any;
@@ -57,8 +65,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
-    window.scene = this.scene;
-    window.parent.THREE = THREE;
+    (window as any).scene = this.scene;
+    (window as any).parent.THREE = THREE;
   }
 
   ngAfterViewInit() {
@@ -66,7 +74,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.initScene();
     this.animate();
     window.addEventListener('resize', this.onWindowResize, false);
-    document.addEventListener('mousemove', this.onMouseMove, false);
+
     document.addEventListener('mousedown', this.onDocumentMouseDown, false);
 
     this.GameLoop();
@@ -90,7 +98,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.camera.position.set(-2700, 1000, 1200);
     // adding camera to the scene
     this.scene.add(this.camera);
-    let controls = new OrbitControls( this.camera, this.renderer.domElement );
+    const controls = new OrbitControls( this.camera, this.renderer.domElement );
 
     // LIGHTNING
     // first point light
@@ -109,7 +117,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.createSpace();
 
     // adding scene and camera to the render
-    console.log("siiin");
+    console.log('siiin');
     console.log(this.scene);
 
     this.renderer.render(this.scene, this.camera);
@@ -131,6 +139,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   createWalt() {
     // create a group container
     this.waltGroup = new THREE.Object3D();
+    this.handGroup = new THREE.Object3D();
 
     // setting up loader for a model
     const loader = new GLTFLoader();
@@ -140,7 +149,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
         color: Math.random() * 0xff00000 - 0xff00000,
         // shading: THREE.FlatShading
       });
-      console.log("walthead", geometry.scene.clone(true).children[0]);
+      console.log('walthead', geometry.scene.clone(true).children[0]);
       const waltHead = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
       waltHead.position.x = 0;
       waltHead.position.y = 0;
@@ -162,29 +171,75 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
     });
 
+    const handLoader = new GLTFLoader();
     // load walthand and clone it
-    loader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
+    handLoader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
       const material = new MeshToonMaterial({
         color: Math.random() * 0xff00000 - 0xff00000,
         // shading: THREE.FlatShading
       });
 
+      console.log('HANDOU');
+      console.log( geometry);
+      console.log( geometry.scene.clone(true).children[0]);
+      const handou = geometry.scene.clone(true).children[0];
+      const skinMesh: SkinnedMesh = handou.children[0].children[0].children[0].children[2];
+      const bones = [handou.children[0].children[0].children[0].children[0]] as Bone[];
+      console.log("skinMesh", skinMesh);
+      console.log("bone", bones);
+      console.log('handou', handou);
+
+      var skellytone = new THREE.Skeleton( bones );
+      var rootBone = skellytone.bones[ 0 ];
+      skinMesh.add( rootBone );
+
+// bind the skeleton to the mesh
+
+      skinMesh.bind( skellytone );
+
+      handou.position.x = 0;
+      handou.position.y = 100;
+      handou.position.z = 0;
+      handou.rotation.y = Math.PI * 1.5;
+      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 50
+
+      /*
+      // WORKS ON CHAIR AND SWORD and gltf logo
+      console.log('HANDOU');
+      console.log( geometry);
+      console.log( geometry.scene.clone(true).children[0]);
+      const handou = geometry.scene.clone(true).children[0];
+      console.log('handou', handou);
+      handou.position.x = 0;
+      handou.position.y = 100;
+      handou.position.z = 0;
+      handou.rotation.y = Math.PI * 1.5;
+      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 50;*/
+
+      // and randomly push it into userData object
+      handou.userData = {
+        name: 'Pawge'
+      };
+      this.waltLeftHand = handou;
+      this.handGroup.add(handou);
+
+      this.scene.add(handou);
+      return;
+
       this.scene.add(geometry.scene.children[0]);
       this.renderer.render(this.scene, this.camera);
-      return;
-      console.log("HANDOU");
-      console.log( geometry.scene.children[0].children[0].children[0].children[0]);
-      var waltHand = geometry.scene.children[0].children[0].children[0].children[0];
+
+      const waltHand = geometry.scene.children[0].children[0].children[0].children[0];
       const waltHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
-      //console.log(waltHandLeft.children.splice(2, 1));
+      // console.log(waltHandLeft.children.splice(2, 1));
       console.log('walhanlef', waltHandLeft);
 
       const mesh = waltHand;
-      const skeleton = new THREE.Skeleton(waltHand.children[0].children);
-      //mesh.add(waltHand.children[0].children[0]);
-      //mesh.bind(skeleton);
+      const skeleton = waltHand.children[0].children;
+      // mesh.add(waltHand.children[0].children[0]);
+      // mesh.bind(skeleton);
 
-      console.log("mosh", mesh);
+      console.log('mosh', mesh);
 
       /*mesh.position.x = this.mainPlaneWidth;
       mesh.position.y = 1200;
@@ -215,7 +270,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       };
       this.waltRightHand = waltHandRight;
 
-      //this.waltGroup.add(waltHandRight);
+      // this.waltGroup.add(waltHandRight);
 
       this.waltGroup.position.x = this.mainPlaneWidth / 2;
       this.scene.add(this.waltGroup);
@@ -244,7 +299,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       return;
     }
     // set up camera position
-    //this.camera.lookAt(this.scene.position);
+    // this.camera.lookAt(this.scene.position);
   }
 
   onDocumentMouseDown = (event) => {
@@ -285,8 +340,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   // run game loop (update, render, repeat)
   GameLoop = () => {
     requestAnimationFrame(this.GameLoop);
-    //this.update();
-    //this.render();
+    // this.update();
+    // this.render();
   }
 
 }
