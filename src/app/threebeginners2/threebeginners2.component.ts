@@ -4,7 +4,7 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {forEachComment} from 'tslint';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {
-  Bone,
+  Bone, Material,
   MeshBasicMaterial,
   MeshLambertMaterial,
   MeshPhysicalMaterial,
@@ -181,10 +181,10 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
       console.log('HANDOU');
       console.log( geometry);
-      console.log( geometry.scene.clone(true).children[0]);
+      console.log( geometry.scene.clone(true).children[0], geometry.scene.clone(true).children[0].children[0].children[0]);
       const handou = geometry.scene.clone(true).children[0];
-      const skinMesh: SkinnedMesh = handou.children[0].children[0].children[0].children[2];
-      const bones = [handou.children[0].children[0].children[0].children[0]] as Bone[];
+      const skinMesh: any = handou.children[0].children[0].children[0].children[2];
+      const bones = [handou.children[0].children[0].children[0].children[0].clone(true)] as Bone[];
       console.log("skinMesh", skinMesh);
       console.log("bone", bones);
       console.log('handou', handou);
@@ -192,7 +192,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       var skellytone = new THREE.Skeleton( bones );
       var rootBone = skellytone.bones[ 0 ];
       skinMesh.add( rootBone );
-
+      skinMesh.material = material;
 // bind the skeleton to the mesh
 
       skinMesh.bind( skellytone );
@@ -201,7 +201,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       handou.position.y = 100;
       handou.position.z = 0;
       handou.rotation.y = Math.PI * 1.5;
-      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 50
+      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 10;
 
       /*
       // WORKS ON CHAIR AND SWORD and gltf logo
