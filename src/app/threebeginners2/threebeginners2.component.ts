@@ -67,7 +67,10 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   // dots vars
   public dots: any;
   private clock = new THREE.Clock();
-  private mixer: AnimationMixer;
+  private waltAnimationMixer: AnimationMixer;
+  private waltLeftHandAnimationMixer: AnimationMixer;
+  private waltRightHandAnimationMixer: AnimationMixer;
+  private lampAnimationMixer: AnimationMixer;
 
   constructor() { }
 
@@ -149,164 +152,91 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.waltGroup = new THREE.Object3D();
     this.handGroup = new THREE.Object3D();
 
-    // setting up loader for a model
-    const loader = new GLTFLoader();
     // load model and clone it
-    loader.load('assets/3Dmodels/walthead.gltf', (geometry) => {
-      const material = new MeshToonMaterial({
-        color: Math.random() * 0xff00000 - 0xff00000,
-        // shading: THREE.FlatShading
-      });
-      console.log('walthead', geometry.scene.clone(true).children[0]);
-      const waltHead = geometry.scene.clone(true).children[0]; // new THREE.Mesh(geometry.asset, material);
-      waltHead.position.x = 0;
-      waltHead.position.y = 0;
-      waltHead.position.z = 0;
-      waltHead.rotation.y = Math.PI * 1.5;
-      waltHead.scale.x = waltHead.scale.y = waltHead.scale.z = (Math.random() * 1 + 10) * 0.3;
+    const loader = new FBXLoader();
 
-      // and randomly push it into userData object
-      waltHead.userData = {
-        name: 'Pawge'
-      };
-      this.waltHead = waltHead;
-      this.waltGroup.add(waltHead);
+    loader.load('assets/3Dmodels/walthead.fbx', (object) => {
 
-      this.scene.add(waltHead);
+      object.position.x = 1000;
+      object.position.y = 1000;
+      object.position.z = 0;
+      object.rotation.y = Math.PI * 1.5;
+      object.scale.x = object.scale.y = object.scale.z = 0.1;
+
+      this.waltHead = object;
+      this.waltGroup.add(this.waltHead);
+
+      this.scene.add(this.waltHead);
+
+
+      this.waltAnimationMixer = new THREE.AnimationMixer( this.waltHead );
+      let clips = this.waltHead.animations;
+      console.log("Walt clips", clips);
+      let clip = THREE.AnimationClip.findByName( clips, 'Armature|Laugh' );
+      console.log('walt clip', clip);
+      let action = this.waltAnimationMixer.clipAction( clip );
+      setTimeout(() => {
+        action.play();
+      }, 1000);
 
       // we will delete this line later
       this.renderer.render(this.scene, this.camera);
 
     });
 
-    const handLoader = new GLTFLoader();
-    // load walthand and clone it
-    handLoader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
-      const material = new MeshToonMaterial({
-        color: Math.random() * 0xff00000 - 0xff00000,
-        // shading: THREE.FlatShading
-      });
+    loader.load('assets/3Dmodels/walthand.fbx', (object) => {
 
-      const handou = geometry.scene.clone(true).children[0];
-      const skinMesh: any = handou.children[0].children[0].children[0].children[2];
-      const bones = [handou.children[0].children[0].children[0].children[0].clone(true)] as Bone[];
+      object.position.x = 1000;
+      object.position.y = 1000;
+      object.position.z = 500;
+      object.rotation.y = Math.PI * 1.5;
+      object.scale.x = object.scale.y = object.scale.z = 5;
+      object.scale.x = -5;
 
-      let skellytone = new THREE.Skeleton( bones );
-      let rootBone = skellytone.bones[ 0 ];
+      this.waltLeftHand = object;
+      this.waltGroup.add(this.waltLeftHand);
 
-      rootBone.children.forEach((bone) => {
+      this.scene.add(this.waltLeftHand);
 
-      });
-      skinMesh.add( rootBone );
-      skinMesh.material = material;
 
-// bind the skeleton to the mesh
+      this.waltLeftHandAnimationMixer = new THREE.AnimationMixer( this.waltLeftHand );
+      let clips = this.waltLeftHand.animations;
+      console.log("L Hand clips", clips);
+      let clip = THREE.AnimationClip.findByName( clips, 'Armature|idle' );
+      console.log('L hand clip', clip);
+      let action = this.waltLeftHandAnimationMixer.clipAction( clip );
+      setTimeout(() => {
+        action.play();
+      }, 1000);
 
-      skinMesh.bind( skellytone );
-
-      handou.position.x = 0;
-      handou.position.y = 100;
-      handou.position.z = 0;
-      handou.rotation.y = Math.PI * 1.5;
-      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 10;
-
-      // Create an AnimationMixer, and get the list of AnimationClip instances
-      const mixer = new THREE.AnimationMixer( skinMesh );
-      const clips = skinMesh.animations;
-      console.log('hand clips', clips);
-      return; s;
-      // Update the mixer on each frame
-      const deltaSeconds = 1;
-      function update() {
-        mixer.update( deltaSeconds );
-      }
-
-// Play a specific animation
-      const clip = THREE.AnimationClip.findByName( clips, 'dance' );
-      const action = mixer.clipAction( clip );
-      action.play();
-
-// Play all animations
-      clips.forEach( function( clip ) {
-        mixer.clipAction( clip ).play();
-      } );
-
-      /*
-      // WORKS ON CHAIR AND SWORD and gltf logo
-      console.log('HANDOU');
-      console.log( geometry);
-      console.log( geometry.scene.clone(true).children[0]);
-      const handou = geometry.scene.clone(true).children[0];
-      console.log('handou', handou);
-      handou.position.x = 0;
-      handou.position.y = 100;
-      handou.position.z = 0;
-      handou.rotation.y = Math.PI * 1.5;
-      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 50;*/
-
-      // and randomly push it into userData object
-      handou.userData = {
-        name: 'Pawge'
-      };
-      this.waltLeftHand = handou;
-      this.handGroup.add(handou);
-
-      this.scene.add(handou);
-
-      const helper = new THREE.SkeletonHelper( handou );
-      this.scene.add( helper );
-
-      return;
-
-      this.scene.add(geometry.scene.children[0]);
+      // we will delete this line later
       this.renderer.render(this.scene, this.camera);
 
-      const waltHand = geometry.scene.children[0].children[0].children[0].children[0];
-      const waltHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
-      // console.log(waltHandLeft.children.splice(2, 1));
-      console.log('walhanlef', waltHandLeft);
+    });
 
-      const mesh = waltHand;
-      const skeleton = waltHand.children[0].children;
-      // mesh.add(waltHand.children[0].children[0]);
-      // mesh.bind(skeleton);
+    loader.load('assets/3Dmodels/walthand.fbx', (object) => {
 
-      console.log('mosh', mesh);
+      object.position.x = 1000;
+      object.position.y = 1000;
+      object.position.z = -500;
+      object.rotation.y = Math.PI * 1.5;
+      object.scale.x = object.scale.y = object.scale.z = 5;
 
-      /*mesh.position.x = this.mainPlaneWidth;
-      mesh.position.y = 1200;
-      mesh.position.z = 500;
-      mesh.rotation.y = Math.PI * 1.5;
-      mesh.scale.x = mesh.scale.y = mesh.scale.z = (Math.random() * 1 + 10) * 0.6;
+      this.waltRightHand = object;
+      this.waltGroup.add(this.waltRightHand);
 
-      // and randomly push it into userData object
-      waltHandLeft.userData = {
-        name: 'Pawge'
-      };*/
-      this.waltLeftHand = mesh;
+      this.scene.add(this.waltRightHand);
 
-      this.waltGroup.add(mesh);
 
-      const waltHandRight = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
-      console.log('walhanlef', waltHandLeft);
-      waltHandRight.children.splice(2, 1);
-      waltHandRight.position.x = this.mainPlaneWidth;
-      waltHandRight.position.y = 1200;
-      waltHandRight.position.z = -500;
-      waltHandRight.rotation.y = Math.PI * 1.5;
-      waltHandRight.scale.x = waltHandRight.scale.y = waltHandRight.scale.z = (Math.random() * 1 + 10) * 0.6;
-
-      // and randomly push it into userData object
-      waltHandRight.userData = {
-        name: 'Pawge'
-      };
-      this.waltRightHand = waltHandRight;
-
-      // this.waltGroup.add(waltHandRight);
-
-      this.waltGroup.position.x = this.mainPlaneWidth / 2;
-      this.scene.add(this.waltGroup);
-
+      this.waltRightHandAnimationMixer = new THREE.AnimationMixer( this.waltRightHand );
+      let clips = this.waltRightHand.animations;
+      console.log("L Hand clips", clips);
+      let clip = THREE.AnimationClip.findByName( clips, 'Armature|idle' );
+      console.log('L hand clip', clip);
+      let action = this.waltRightHandAnimationMixer.clipAction( clip );
+      setTimeout(() => {
+        action.play();
+      }, 1000);
 
       // we will delete this line later
       this.renderer.render(this.scene, this.camera);
@@ -323,7 +253,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     // load model and clone it
     loader.load('assets/3Dmodels/animlamp.fbx', (object) => {
 
-      object.position.x = 0;
+      object.position.x = -1000;
       object.position.y = 0;
       object.position.z = 0;
       object.rotation.y = Math.PI * 1.5;
@@ -342,11 +272,11 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       console.log('lamp object', this.lamp);
       console.log('lamp this.lamp animations', this.lamp.animations);
 
-      this.mixer = new THREE.AnimationMixer( this.lamp );
+      this.lampAnimationMixer = new THREE.AnimationMixer( this.lamp );
       let clips = this.lamp.animations;
       let clip = THREE.AnimationClip.findByName( clips, 'Armature|Look Around' );
       console.log('lamp clip', clip);
-      let action = this.mixer.clipAction( clip );
+      let action = this.lampAnimationMixer.clipAction( clip );
       setTimeout(() => {
         action.play();
       }, 1000);
@@ -523,9 +453,18 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   animate = () => {
     requestAnimationFrame(this.animate);
 
-    if (this.mixer) {
-      const delta = 0.75 * this.clock.getDelta();
-      this.mixer.update(delta);
+    const delta = 0.75 * this.clock.getDelta();
+    if (this.lampAnimationMixer) {
+      this.lampAnimationMixer.update(delta);
+    }
+    if (this.waltAnimationMixer) {
+      this.waltAnimationMixer.update(delta);
+    }
+    if (this.waltLeftHandAnimationMixer) {
+      this.waltLeftHandAnimationMixer.update(delta);
+    }
+    if (this.waltRightHandAnimationMixer) {
+      this.waltRightHandAnimationMixer.update(delta);
     }
 
     this.render();
@@ -539,8 +478,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   // game logic
   update() {
     if (this.waltHead) {
-      this.waltHead.rotation.x += 0.01;
-      this.waltHead.rotation.y += 0.005;
+      // this.waltHead.rotation.x += 0.01;
+      // this.waltHead.rotation.y += 0.005;
     }
     /*if (this.waltRightHand && this.waltLeftHand) {
       this.waltRightHand.rotation.x += 0.01;
