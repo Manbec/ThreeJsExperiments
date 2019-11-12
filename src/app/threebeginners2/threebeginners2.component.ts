@@ -4,6 +4,7 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {forEachComment} from 'tslint';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {
+  AnimationMixer,
   Bone, Material,
   MeshBasicMaterial,
   MeshLambertMaterial,
@@ -13,6 +14,8 @@ import {
   SkinnedMesh,
   TextureLoader
 } from 'three';
+import {root} from 'rxjs/internal-compatibility';
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
 
 @Component({
   selector: 'app-threebeginners2',
@@ -59,8 +62,12 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   public waltRightHand: any;
   public waltLeftHand: any;
 
+  public lamp: any;
+
   // dots vars
   public dots: any;
+  private clock = new THREE.Clock();
+  private mixer: AnimationMixer;
 
   constructor() { }
 
@@ -114,6 +121,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     // OBJECTS
     // here we add objects by functions which we will write below
     this.createWalt();
+    this.createLamp();
     this.createSpace();
 
     // adding scene and camera to the render
@@ -179,20 +187,19 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
         // shading: THREE.FlatShading
       });
 
-      console.log('HANDOU');
-      console.log( geometry);
-      console.log( geometry.scene.clone(true).children[0], geometry.scene.clone(true).children[0].children[0].children[0]);
       const handou = geometry.scene.clone(true).children[0];
       const skinMesh: any = handou.children[0].children[0].children[0].children[2];
       const bones = [handou.children[0].children[0].children[0].children[0].clone(true)] as Bone[];
-      console.log("skinMesh", skinMesh);
-      console.log("bone", bones);
-      console.log('handou', handou);
 
-      var skellytone = new THREE.Skeleton( bones );
-      var rootBone = skellytone.bones[ 0 ];
+      let skellytone = new THREE.Skeleton( bones );
+      let rootBone = skellytone.bones[ 0 ];
+
+      rootBone.children.forEach((bone) => {
+
+      });
       skinMesh.add( rootBone );
       skinMesh.material = material;
+
 // bind the skeleton to the mesh
 
       skinMesh.bind( skellytone );
@@ -202,6 +209,27 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       handou.position.z = 0;
       handou.rotation.y = Math.PI * 1.5;
       handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 10;
+
+      // Create an AnimationMixer, and get the list of AnimationClip instances
+      const mixer = new THREE.AnimationMixer( skinMesh );
+      const clips = skinMesh.animations;
+      console.log('hand clips', clips);
+      return; s;
+      // Update the mixer on each frame
+      const deltaSeconds = 1;
+      function update() {
+        mixer.update( deltaSeconds );
+      }
+
+// Play a specific animation
+      const clip = THREE.AnimationClip.findByName( clips, 'dance' );
+      const action = mixer.clipAction( clip );
+      action.play();
+
+// Play all animations
+      clips.forEach( function( clip ) {
+        mixer.clipAction( clip ).play();
+      } );
 
       /*
       // WORKS ON CHAIR AND SWORD and gltf logo
@@ -224,6 +252,184 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       this.handGroup.add(handou);
 
       this.scene.add(handou);
+
+      const helper = new THREE.SkeletonHelper( handou );
+      this.scene.add( helper );
+
+      return;
+
+      this.scene.add(geometry.scene.children[0]);
+      this.renderer.render(this.scene, this.camera);
+
+      const waltHand = geometry.scene.children[0].children[0].children[0].children[0];
+      const waltHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      // console.log(waltHandLeft.children.splice(2, 1));
+      console.log('walhanlef', waltHandLeft);
+
+      const mesh = waltHand;
+      const skeleton = waltHand.children[0].children;
+      // mesh.add(waltHand.children[0].children[0]);
+      // mesh.bind(skeleton);
+
+      console.log('mosh', mesh);
+
+      /*mesh.position.x = this.mainPlaneWidth;
+      mesh.position.y = 1200;
+      mesh.position.z = 500;
+      mesh.rotation.y = Math.PI * 1.5;
+      mesh.scale.x = mesh.scale.y = mesh.scale.z = (Math.random() * 1 + 10) * 0.6;
+
+      // and randomly push it into userData object
+      waltHandLeft.userData = {
+        name: 'Pawge'
+      };*/
+      this.waltLeftHand = mesh;
+
+      this.waltGroup.add(mesh);
+
+      const waltHandRight = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      console.log('walhanlef', waltHandLeft);
+      waltHandRight.children.splice(2, 1);
+      waltHandRight.position.x = this.mainPlaneWidth;
+      waltHandRight.position.y = 1200;
+      waltHandRight.position.z = -500;
+      waltHandRight.rotation.y = Math.PI * 1.5;
+      waltHandRight.scale.x = waltHandRight.scale.y = waltHandRight.scale.z = (Math.random() * 1 + 10) * 0.6;
+
+      // and randomly push it into userData object
+      waltHandRight.userData = {
+        name: 'Pawge'
+      };
+      this.waltRightHand = waltHandRight;
+
+      // this.waltGroup.add(waltHandRight);
+
+      this.waltGroup.position.x = this.mainPlaneWidth / 2;
+      this.scene.add(this.waltGroup);
+
+
+      // we will delete this line later
+      this.renderer.render(this.scene, this.camera);
+
+    });
+
+
+  }
+
+  createLamp() {
+
+    // setting up loader for a model
+    const loader = new FBXLoader();
+    // load model and clone it
+    loader.load('assets/3Dmodels/animlamp.fbx', (object) => {
+
+      object.position.x = 0;
+      object.position.y = 0;
+      object.position.z = 0;
+      object.rotation.y = Math.PI * 1.5;
+      object.scale.x = object.scale.y = object.scale.z = (Math.random() * 1 + 10) * 0.3;
+
+      // and randomly push it into userData object
+      object.userData = {
+        name: 'Pawge'
+      };
+
+      this.lamp = object;
+      this.scene.add(this.lamp);
+
+      // we will delete this line later
+
+      console.log('lamp object', this.lamp);
+      console.log('lamp this.lamp animations', this.lamp.animations);
+
+      this.mixer = new THREE.AnimationMixer( this.lamp );
+      let clips = this.lamp.animations;
+      let clip = THREE.AnimationClip.findByName( clips, 'Armature|Look Around' );
+      console.log('lamp clip', clip);
+      let action = this.mixer.clipAction( clip );
+      setTimeout(() => {
+        action.play();
+      }, 1000);
+      this.renderer.render(this.scene, this.camera);
+
+    });
+
+    const handLoader = new GLTFLoader();
+    // load walthand and clone it
+    handLoader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
+      const material = new MeshToonMaterial({
+        color: Math.random() * 0xff00000 - 0xff00000,
+        // shading: THREE.FlatShading
+      });
+
+      const handou = geometry.scene.clone(true).children[0];
+      const skinMesh: any = handou.children[0].children[0].children[0].children[2];
+      const bones = [handou.children[0].children[0].children[0].children[0].clone(true)] as Bone[];
+
+      let skellytone = new THREE.Skeleton( bones );
+      let rootBone = skellytone.bones[ 0 ];
+
+      rootBone.children.forEach((bone) => {
+
+      });
+      skinMesh.add( rootBone );
+      skinMesh.material = material;
+
+// bind the skeleton to the mesh
+
+      skinMesh.bind( skellytone );
+
+      handou.position.x = 0;
+      handou.position.y = 100;
+      handou.position.z = 0;
+      handou.rotation.y = Math.PI * 1.5;
+      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 10;
+
+      // Create an AnimationMixer, and get the list of AnimationClip instances
+      const mixer = new THREE.AnimationMixer( skinMesh );
+      const clips = skinMesh.animations;
+      return;
+      // Update the mixer on each frame
+      const deltaSeconds = 1;
+      function update() {
+        mixer.update( deltaSeconds );
+      }
+
+// Play a specific animation
+      const clip = THREE.AnimationClip.findByName( clips, 'dance' );
+      const action = mixer.clipAction( clip );
+      action.play();
+
+// Play all animations
+      clips.forEach( function( clip ) {
+        mixer.clipAction( clip ).play();
+      } );
+
+      /*
+      // WORKS ON CHAIR AND SWORD and gltf logo
+      console.log('HANDOU');
+      console.log( geometry);
+      console.log( geometry.scene.clone(true).children[0]);
+      const handou = geometry.scene.clone(true).children[0];
+      console.log('handou', handou);
+      handou.position.x = 0;
+      handou.position.y = 100;
+      handou.position.z = 0;
+      handou.rotation.y = Math.PI * 1.5;
+      handou.scale.x = handou.scale.y = handou.scale.z = (Math.random() * 1 + 10) * 50;*/
+
+      // and randomly push it into userData object
+      handou.userData = {
+        name: 'Pawge'
+      };
+      this.waltLeftHand = handou;
+      this.handGroup.add(handou);
+
+      this.scene.add(handou);
+
+      const helper = new THREE.SkeletonHelper( handou );
+      this.scene.add( helper );
+
       return;
 
       this.scene.add(geometry.scene.children[0]);
@@ -316,8 +522,15 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
   animate = () => {
     requestAnimationFrame(this.animate);
+
+    if (this.mixer) {
+      const delta = 0.75 * this.clock.getDelta();
+      this.mixer.update(delta);
+    }
+
     this.render();
   }
+
   render() {
     this.renderer.render(this.scene, this.camera);
   }
@@ -340,7 +553,8 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   // run game loop (update, render, repeat)
   GameLoop = () => {
     requestAnimationFrame(this.GameLoop);
-    // this.update();
+    this.update();
+    // this.animate();
     // this.render();
   }
 
