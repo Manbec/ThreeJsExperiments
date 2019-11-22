@@ -101,11 +101,11 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.container.appendChild(this.renderer.domElement);
 
     // init scene, camera and camera position
-    this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.2, 25000);
+    this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 25000);
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
 
-    this.camera.position.set(-2700, 1000, 1200);
+    this.camera.position.set(-2700, 700, 2200);
     // adding camera to the scene
     this.scene.add(this.camera);
     const controls = new OrbitControls( this.camera, this.renderer.domElement );

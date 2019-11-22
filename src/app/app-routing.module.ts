@@ -8,6 +8,10 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'three1', component: Threebeginners1Component },
   { path: 'three2', component: Threebeginners2Component },
+  {
+    path: 'starhead',
+    loadChildren: './starhead/starhead.module#StarheadModule',
+  },
 ];
 
 @NgModule({
