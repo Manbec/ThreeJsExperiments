@@ -1,4 +1,9 @@
 import * as THREE from 'three';
+import {GameStateManagementService} from './services/game-state-management.service';
+import {SceneSubject} from './scene-subjects/scene.subject';
+import {Lights} from './scene-subjects/lights';
+import {GameEntitiesManager} from './scene-subjects/game-entities.manager';
+import {PlayerAndCameraPositionManager} from './starhead.camera-player-position-manager.component';
 
 export class SceneManager {
 
@@ -8,6 +13,7 @@ export class SceneManager {
   private scene: THREE.Scene;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
+  private sceneSubjects: SceneSubject[];
 
   /*
     Based on https://medium.com/@soffritti.pierfrancesco/how-to-organize-the-structure-of-a-three-js-project-77649f58fa3f
@@ -17,8 +23,10 @@ export class SceneManager {
     http://devx.ddd.it/en/experiment/18/
     https://github.com/PierfrancescoSoffritti/doodles/tree/master/18_Monolith
    */
+  private gameEntitiesManager: GameEntitiesManager;
+  private playerAndCameraPositionManager: PlayerAndCameraPositionManager;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, private gameStateManagementService: GameStateManagementService) {
 
     this.canvas = canvas;
 
@@ -32,7 +40,18 @@ export class SceneManager {
     this.scene = this.buildScene();
     this.renderer = this.buildRender(this.screenDimensions);
     this.camera = this.buildCamera(this.screenDimensions);
-    this.sceneSubjects = this.createSceneSubjects(scene);
+    this.sceneSubjects = this.createSceneSubjects(this.scene, gameStateManagementService.gameConstants);
+
+    // these should be SceneSubjects
+    this.gameEntitiesManager = new GameEntitiesManager(this.scene, gameStateManagementService.gameConstants, gameStateManagementService.gameState);
+    this.playerAndCameraPositionManager = new PlayerAndCameraPositionManager(
+      this.camera,
+      gameEntitiesManager.player,
+      gameStateManagementService.gameConstants,
+      gameStateManager.gameState
+    );
+
+    const controls = this.buildControls(this.playerAndCameraPositionManager, this.gameEntitiesManager.player, gameStateManagementService.gameConstants, gameStateManagementService.gameState)
 
   }
 
@@ -65,21 +84,31 @@ export class SceneManager {
     return camera;
   }
 
-  createSceneSubjects(scene) {
-    const sceneSubjects = [
-      // new GeneralLights(scene),
+
+  buildControls(playerAndCameraPositionManager, player, gameConstants, gameState) {
+    const controls = {
+      polar: new PolarControls(playerAndCameraPositionManager, gameConstants, gameState),
+      mouse: new MouseControls(gameState, playerAndCameraPositionManager, player)
+    };
+
+    return controls;
+  }
+
+  createSceneSubjects(scene: THREE.Scene, gameConstants: { speedStep: number }) {
+    const sceneSubjects: SceneSubject[] = [
+      new Lights(scene),
       // new SceneSubject(scene)
     ];
 
     return sceneSubjects;
   }
 
-  update = (): void => {
+  update(): void {
 
-    const elapsedTime = clock.getElapsedTime();
+    const elapsedTime = this.clock.getElapsedTime();
 
-    for (let i=0; i < this.sceneSubjects.length; i++) {
-      this.sceneSubjects[i].update(elapsedTime);
+    for (sceneSubject of this.sceneSubjects) {
+      sceneSubject.update(elapsedTime);
     }
 
     this.renderer.render(this.scene, this.camera);

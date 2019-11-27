@@ -1,5 +1,6 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SceneManager} from './starhead.scene-manager.component';
+import {GameStateManagementService} from './services/game-state-management.service';
 
 @Component({
   selector: 'threejslab-star-head',
@@ -8,26 +9,29 @@ import {SceneManager} from './starhead.scene-manager.component';
 })
 export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  @ViewChild('gameCanvasEl', { static: true }) gameCanvasEl: ElementRef;
   private canvas: HTMLCanvasElement;
   private sceneManager: SceneManager;
 
-  constructor() { }
+  constructor(private gameStateManagementService: GameStateManagementService) { }
 
   ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {
-    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+    this.canvas = this.gameCanvasEl.nativeElement as HTMLCanvasElement;
 
     if (this.canvas) {
       console.error('Could not rertieve scene canvas');
       return;
     }
 
-    this.sceneManager = new SceneManager(this.canvas);
+    this.sceneManager = new SceneManager(this.canvas, this.gameStateManagementService);
 
     this.bindEventListeners();
     this.gameLoop();
+
   }
 
   ngOnDestroy(): void {
