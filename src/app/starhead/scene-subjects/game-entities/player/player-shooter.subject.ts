@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {ShooterComponentSubject} from '../shooter.subject';
+import {Vector3} from 'three';
 
 export class PlayerShooter extends ShooterComponentSubject {
 
@@ -11,4 +12,7 @@ export class PlayerShooter extends ShooterComponentSubject {
 
   }
 
+  shoot(vector3: Vector3) {
+
+  }
 }

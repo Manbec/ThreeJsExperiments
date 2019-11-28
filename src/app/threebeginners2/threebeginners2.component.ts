@@ -168,7 +168,6 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
       this.scene.add(this.waltHead);
 
-
       this.waltAnimationMixer = new THREE.AnimationMixer( this.waltHead );
       let clips = this.waltHead.animations;
       console.log("Walt clips", clips);

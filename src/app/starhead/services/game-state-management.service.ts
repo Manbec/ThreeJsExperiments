@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 
+export interface GameState {
+  playerHasMoved: boolean;
+  enableUserInput: boolean;
+  health: number;
+  playerPosition: THREE.Vector3;
+}
+
+export interface GameConstants {
+  speedStep: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -8,16 +19,11 @@ export class GameStateManagementService {
 
   private initialHealth = 100;
 
-  gameConstants = {
+  gameConstants: GameConstants = {
     speedStep: 0,
   };
 
-  gameState: {
-    playerHasMoved: boolean;
-    enableUserInput: boolean;
-    health: number;
-    playerPosition: THREE.Vector3
-  };
+  gameState: GameState;
 
   constructor() {
 

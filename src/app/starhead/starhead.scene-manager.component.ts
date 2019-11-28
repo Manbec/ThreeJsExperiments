@@ -4,6 +4,8 @@ import {SceneSubject} from './scene-subjects/scene.subject';
 import {Lights} from './scene-subjects/lights';
 import {GameEntitiesManager} from './scene-subjects/game-entities.manager';
 import {PlayerAndCameraPositionManager} from './starhead.camera-player-position-manager.component';
+import {MouseControls} from './game/controls/mouse.control';
+import {PolarControls} from './game/controls/polar.control';
 
 export class SceneManager {
 
@@ -43,15 +45,23 @@ export class SceneManager {
     this.sceneSubjects = this.createSceneSubjects(this.scene, gameStateManagementService.gameConstants);
 
     // these should be SceneSubjects
-    this.gameEntitiesManager = new GameEntitiesManager(this.scene, gameStateManagementService.gameConstants, gameStateManagementService.gameState);
+    this.gameEntitiesManager = new GameEntitiesManager(
+      this.scene,
+      gameStateManagementService.gameConstants,
+      gameStateManagementService.gameState);
     this.playerAndCameraPositionManager = new PlayerAndCameraPositionManager(
       this.camera,
-      gameEntitiesManager.player,
+      this.gameEntitiesManager.player,
       gameStateManagementService.gameConstants,
-      gameStateManager.gameState
+      gameStateManagementService.gameState
     );
 
-    const controls = this.buildControls(this.playerAndCameraPositionManager, this.gameEntitiesManager.player, gameStateManagementService.gameConstants, gameStateManagementService.gameState)
+    const controls = this.buildControls(
+      this.playerAndCameraPositionManager,
+      this.gameEntitiesManager.player,
+      gameStateManagementService.gameConstants,
+      gameStateManagementService.gameState
+    );
 
   }
 
@@ -87,8 +97,8 @@ export class SceneManager {
 
   buildControls(playerAndCameraPositionManager, player, gameConstants, gameState) {
     const controls = {
-      polar: new PolarControls(playerAndCameraPositionManager, gameConstants, gameState),
-      mouse: new MouseControls(gameState, playerAndCameraPositionManager, player)
+      polar: new PolarControls(this.scene, playerAndCameraPositionManager, gameConstants, gameState),
+      mouse: new MouseControls(this.scene, gameState, playerAndCameraPositionManager, player)
     };
 
     return controls;
@@ -107,8 +117,8 @@ export class SceneManager {
 
     const elapsedTime = this.clock.getElapsedTime();
 
-    for (sceneSubject of this.sceneSubjects) {
-      sceneSubject.update(elapsedTime);
+    for (const subject of this.sceneSubjects) {
+      subject.update(elapsedTime);
     }
 
     this.renderer.render(this.scene, this.camera);

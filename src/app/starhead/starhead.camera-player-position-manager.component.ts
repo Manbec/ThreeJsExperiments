@@ -1,8 +1,10 @@
 import * as THREE from 'three';
-import {GameStateManagementService} from './services/game-state-management.service';
+import {GameConstants, GameState, GameStateManagementService} from './services/game-state-management.service';
 import {SceneSubject} from './scene-subjects/scene.subject';
 import {Lights} from './scene-subjects/lights';
 import {GameEntitiesManager} from './scene-subjects/game-entities.manager';
+import {Player} from './scene-subjects/game-entities/player/player.subject';
+import {Camera} from 'three';
 
 export class PlayerAndCameraPositionManager {
 
@@ -14,7 +16,10 @@ export class PlayerAndCameraPositionManager {
   private camera: THREE.PerspectiveCamera;
   private sceneSubjects: SceneSubject[];
 
-  constructor(canvas: HTMLCanvasElement, private gameStateManagementService: GameStateManagementService) {
+  constructor(camera: Camera,
+              player: Player,
+              private gameConstants: GameConstants,
+              gameState: GameState) {
 
 
   }

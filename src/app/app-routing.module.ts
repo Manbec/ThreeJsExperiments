@@ -12,7 +12,11 @@ const routes: Routes = [
     path: 'starhead',
     loadChildren: './starhead/starhead.module#StarheadModule',
   },
+  {
+    path: 'starhead',
+  },
 ];
+
 
 @NgModule({
   imports: [

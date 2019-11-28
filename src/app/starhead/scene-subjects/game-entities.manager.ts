@@ -3,6 +3,7 @@ import {SceneSubject} from './scene.subject';
 import {Scene, Vector3} from 'three';
 import {Player} from './game-entities/player/player.subject';
 import {PlayerShooter} from './game-entities/player/player-shooter.subject';
+import {GameConstants, GameState} from '../services/game-state-management.service';
 
 export class GameEntitiesManager extends SceneSubject {
 
@@ -11,8 +12,8 @@ export class GameEntitiesManager extends SceneSubject {
   walt;
 
   constructor(scene: Scene,
-              gameConstants: { speedStep: number },
-              gameState: { playerHasMoved: boolean; enableUserInput: boolean; health: number; playerPosition: Vector3 }
+              gameConstants: GameConstants,
+              gameState: GameState
               ) {
     super(scene);
 
