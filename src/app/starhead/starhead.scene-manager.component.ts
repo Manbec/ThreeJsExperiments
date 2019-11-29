@@ -117,10 +117,19 @@ export class SceneManager {
   update(): void {
 
     const elapsedTime = this.clock.getElapsedTime();
+    const deltaTime = this.clock.getDelta();
 
     for (const subject of this.sceneSubjects) {
       subject.update(elapsedTime);
     }
+
+    this.gameStateManagementService.update(elapsedTime);
+
+    this.controls.polar.update(elapsedTime);
+    this.controls.mouse.update(elapsedTime);
+
+    this.playerAndCameraPositionManager.update(elapsedTime);
+    this.gameEntitiesManager.update(elapsedTime);
 
     this.renderer.render(this.scene, this.camera);
 

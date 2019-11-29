@@ -4,6 +4,7 @@ import {Player} from './scene-subjects/game-entities/player/player.subject';
 import {Camera} from 'three';
 import {cos, polarToCartesian, sin} from './starhead.utils';
 import TWEEN from '@tweenjs/tween.js';
+import {angularLifecycleInterfaceKeys} from 'codelyzer/util/utils';
 
 export class PlayerAndCameraPositionManager {
 
@@ -32,6 +33,7 @@ export class PlayerAndCameraPositionManager {
               private gameConstants: GameConstants,
               gameState: GameState) {
 
+    this.camera = camera;
     this.player = player;
     this.gameState = gameState;
 
@@ -50,9 +52,12 @@ export class PlayerAndCameraPositionManager {
   }
 
   public update(time) {
-    this.player.playerMesh.position.x = sin(time / 2) / 40;
-    this.player.playerMesh.position.y = sin(time * 2) / 20;
-    this.player.playerMesh.position.z = sin(time) / 40;
+
+    if (!this.camera || !this.player || !this.player.playerMesh) {
+      return;
+    }
+
+    this.player.playerMesh.position.set(sin(time / 2) / 40,  sin(time * 2) / 20, sin(time) / 40);
 
     // camera static movement
     this.cameraPolarPostion.radius += sin(time) / 10;
@@ -72,12 +77,12 @@ export class PlayerAndCameraPositionManager {
   }
 
   updateCameraPosition() {
+    if (!this.camera) {
+      return;
+    }
     const newPolarPositionCamera = polarToCartesian(this.cameraPolarPostion.radius, this.cameraPolarPostion.angle);
 
-    this.camera.position.x = newPolarPositionCamera.x;
-    this.camera.position.z = newPolarPositionCamera.y;
-
-    this.camera.position.y = this.playerPolarPostion.y + this.cameraPolarPostion.y;
+    this.camera.position.set(newPolarPositionCamera.x, this.playerPolarPostion.y + this.cameraPolarPostion.y, newPolarPositionCamera.y);
 
     this.camera.lookAt(this.cameraLookAt);
   }
@@ -100,6 +105,7 @@ export class PlayerAndCameraPositionManager {
   }
 
   setPosition(radius, angle) {
+    console.log(radius, angularLifecycleInterfaceKeys);
     this.cameraPolarPostion.radius = radius;
     this.cameraPolarPostion.angle = angle;
 

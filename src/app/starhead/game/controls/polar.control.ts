@@ -55,7 +55,6 @@ export class PolarControls extends SceneSubject {
   onKeyDown = (keyCode) => {
     this.gameState.playerHasMoved = true;
 
-    console.log(keyCode, this.left, this.right);
     if (keyCode === this.A) {
       this.left = true;
     } else if (keyCode === this.D) {
