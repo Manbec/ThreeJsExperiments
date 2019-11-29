@@ -1,7 +1,10 @@
 import * as THREE from 'three';
 import {SceneSubject} from '../../scene.subject';
+import {Bullet} from '../player/bullet.subject';
 
-export class WaltLeftHand extends SceneSubject {
+export class WaltRightHand extends SceneSubject {
+
+  bullets: Bullet[] = [];
 
   constructor(scene: THREE.Scene) {
     super(scene);
@@ -9,6 +12,10 @@ export class WaltLeftHand extends SceneSubject {
 
   public update(elapsedTime: number): void {
 
+  }
+
+  public getBullets(): Bullet[] {
+    return this.bullets;
   }
 
 }

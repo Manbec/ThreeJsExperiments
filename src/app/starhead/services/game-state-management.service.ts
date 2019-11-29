@@ -10,6 +10,7 @@ export interface GameState {
 
 export interface GameConstants {
   speedStep: number;
+  baseLevelHeight: number;
 }
 
 @Injectable({
@@ -21,6 +22,7 @@ export class GameStateManagementService {
 
   gameConstants: GameConstants = {
     speedStep: 0,
+    baseLevelHeight: 15,
   };
 
   gameState: GameState;
@@ -31,7 +33,7 @@ export class GameStateManagementService {
       playerPosition: new THREE.Vector3(0, 0, 0),
       health: this.initialHealth,
       playerHasMoved: false,
-      enableUserInput: false
+      enableUserInput: true
     };
 
     // NGXS goes here

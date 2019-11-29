@@ -9,14 +9,14 @@ import {Euler, Group, Vector3} from 'three';
 export class Player extends SceneSubject {
 
   private group: Group;
-  private position: Vector3;
-  private rotation: Euler;
-  private acceleration: number;
-  private shooting: boolean;
-  private recoveringFromDamage: boolean;
-  private gameState: GameState;
-  private playerShooter: PlayerShooter;
-  private playerMesh: Group;
+  position: Vector3;
+  rotation: Euler;
+  acceleration: number;
+  shooting: boolean;
+  recoveringFromDamage: boolean;
+  gameState: GameState;
+  playerShooter: PlayerShooter;
+  playerMesh: Group;
 
   constructor(scene: THREE.Scene, gameState: GameState, playerShooter: PlayerShooter) {
     super(scene);
@@ -29,8 +29,8 @@ export class Player extends SceneSubject {
 
     this.loadPlayerMesh();
 
-    this.position = this.group.position;
-    this.rotation = this.group.rotation;
+    this.position.set(this.group.position.x, this.group.position.y, this.group.position.z);
+    this.rotation.set(this.group.rotation.x, this.group.rotation.y, this.group.rotation.z);
 
     this.acceleration = 0;
     this.shooting = false;
@@ -65,7 +65,7 @@ export class Player extends SceneSubject {
   loadPlayerMesh() {
     const loader = new OBJLoader();
     loader.load('assets/3Dmodels/silver-hawk-next/source/shawk13.obj.obj',  (player) => {
-
+      console.log(player);
       this.group.add(player);
 
       const playerPointLight = new THREE.PointLight( '#F1F1F1', .3, 20);

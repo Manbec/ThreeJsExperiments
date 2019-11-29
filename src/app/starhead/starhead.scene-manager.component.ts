@@ -27,6 +27,7 @@ export class SceneManager {
    */
   private gameEntitiesManager: GameEntitiesManager;
   private playerAndCameraPositionManager: PlayerAndCameraPositionManager;
+  private controls: { polar: PolarControls; mouse: MouseControls };
 
   constructor(canvas: HTMLCanvasElement, private gameStateManagementService: GameStateManagementService) {
 
@@ -35,8 +36,8 @@ export class SceneManager {
     this.clock = new THREE.Clock();
 
     this.screenDimensions = {
-      width: this.canvas.width,
-      height: this.canvas.height
+      width: this.canvas.clientWidth,
+      height: this.canvas.clientHeight
     };
 
     this.scene = this.buildScene();
@@ -56,7 +57,7 @@ export class SceneManager {
       gameStateManagementService.gameState
     );
 
-    const controls = this.buildControls(
+    this.controls = this.buildControls(
       this.playerAndCameraPositionManager,
       this.gameEntitiesManager.player,
       gameStateManagementService.gameConstants,
@@ -95,7 +96,7 @@ export class SceneManager {
   }
 
 
-  buildControls(playerAndCameraPositionManager, player, gameConstants, gameState) {
+  buildControls(playerAndCameraPositionManager, player, gameConstants, gameState): {polar: PolarControls, mouse: MouseControls} {
     const controls = {
       polar: new PolarControls(this.scene, playerAndCameraPositionManager, gameConstants, gameState),
       mouse: new MouseControls(this.scene, gameState, playerAndCameraPositionManager, player)
@@ -137,5 +138,58 @@ export class SceneManager {
     this.renderer.setSize(width, height);
   }
 
+
+  onKeyDown(keyCode) {
+
+    if (!this.gameStateManagementService.gameState.enableUserInput) {
+      return;
+    }
+
+    // refactor. this is a hack
+    if (keyCode === 32) {
+      // space
+      this.onMouseDown({ which: 3});
+      return;
+    } else if (keyCode === 77) {
+      // m
+      this.onMouseDown({ which: 1});
+      return;
+    }
+
+    this.controls.polar.onKeyDown(keyCode);
+  }
+
+  onKeyUp(keyCode) {
+    if (!this.gameStateManagementService.gameState.enableUserInput) {
+      return;
+    }
+
+    // refactor. this is a hack
+    if (keyCode === 32) {
+      // space
+      this.onMouseUp({ which: 3});
+      return;
+    } else if(keyCode === 77) {
+      // m
+      this.onMouseUp({ which: 1});
+      return;
+    }
+
+    this.controls.polar.onKeyUp(keyCode);
+  }
+
+  onMouseDown(event) {
+    if (!this.gameStateManagementService.gameState.enableUserInput) {
+      return;
+    }
+    this.controls.mouse.onMouseDown(event);
+  }
+
+  onMouseUp(event) {
+    if (!this.gameStateManagementService.gameState.enableUserInput) {
+      return;
+    }
+    this.controls.mouse.onMouseUp(event);
+  }
 
 }
