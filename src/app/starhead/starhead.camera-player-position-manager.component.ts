@@ -4,7 +4,6 @@ import {Player} from './scene-subjects/game-entities/player/player.subject';
 import {Camera} from 'three';
 import {cos, polarToCartesian, sin} from './starhead.utils';
 import TWEEN from '@tweenjs/tween.js';
-import {angularLifecycleInterfaceKeys} from 'codelyzer/util/utils';
 
 export class PlayerAndCameraPositionManager {
 
@@ -13,7 +12,7 @@ export class PlayerAndCameraPositionManager {
   gameState: GameState;
 
   cameraHeightFromPlayer = { value: .6, offset: 0 };
-  playerDistanceFromCamera = 1.4;
+  playerDistanceFromCamera = 100;
 
   heightLevel = 0;
   lastAngleDirection = 0;
@@ -49,10 +48,23 @@ export class PlayerAndCameraPositionManager {
       y: gameConstants.baseLevelHeight
     };
 
+    const tweenCameraLookAt = new TWEEN.Tween(this.cameraLookAt)
+      .to({ y: 0 }, 1500)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .start();
+
+    console.log(this.cameraLookAt);
+    const tweenCameraHeight = new TWEEN.Tween(this.cameraHeightFromPlayer)
+      .to({ offset: 0 }, 1500)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .start();
   }
 
   public update(time) {
 
+    console.log(this.camera.position);
+    console.log(this.cameraLookAt);
+    console.log(this.player.playerMesh.position);
     if (!this.camera || !this.player || !this.player.playerMesh) {
       return;
     }
@@ -89,13 +101,8 @@ export class PlayerAndCameraPositionManager {
 
   updatePlayerPosition() {
     const newPolarPositionPlayer = polarToCartesian(this.playerPolarPostion.radius, this.playerPolarPostion.angle);
-    this.player.position.x = newPolarPositionPlayer.x;
-    this.player.position.z = newPolarPositionPlayer.y;
-
-    this.player.position.y = this.playerPolarPostion.y;
-
+    this.player.position.set(newPolarPositionPlayer.x, this.playerPolarPostion.y, newPolarPositionPlayer.y);
     this.player.rotation.y = -this.playerPolarPostion.angle;
-
     this.gameState.playerPosition = this.player.position;
   }
 
@@ -105,7 +112,6 @@ export class PlayerAndCameraPositionManager {
   }
 
   setPosition(radius, angle) {
-    console.log(radius, angularLifecycleInterfaceKeys);
     this.cameraPolarPostion.radius = radius;
     this.cameraPolarPostion.angle = angle;
 

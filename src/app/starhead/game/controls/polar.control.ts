@@ -82,7 +82,7 @@ export class PolarControls extends SceneSubject {
   update(time) {
     const angleDirection = this.left ? 1 : this.right ? -1 : 0;
     const radDirection = this.upwards ? -1 : this.down ? 1 : 0;
-
+    return;
     this.angleAccelerator.increaseSpeedOf(this.gameConstants.speedStep);
 
     const angleAcceleration = this.angleAccelerator.getForce(angleDirection);
