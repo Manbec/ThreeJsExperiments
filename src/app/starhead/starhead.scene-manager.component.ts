@@ -89,7 +89,7 @@ export class SceneManager {
     const aspectRatio = width / height;
     const fieldOfView = 60;
     const nearPlane = 1;
-    const farPlane = 100;
+    const farPlane = 1000;
     const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 
     return camera;
@@ -178,7 +178,7 @@ export class SceneManager {
       // space
       this.onMouseUp({ which: 3});
       return;
-    } else if(keyCode === 77) {
+    } else if (keyCode === 77) {
       // m
       this.onMouseUp({ which: 1});
       return;

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {GameConstants, GameState} from './services/game-state-management.service';
 import {Player} from './scene-subjects/game-entities/player/player.subject';
 import {Camera} from 'three';
-import {cos, polarToCartesian, sin} from './starhead.utils';
+import {cos, polarToCartesian, sin, toDeg, toRad} from './starhead.utils';
 import TWEEN from '@tweenjs/tween.js';
 
 export class PlayerAndCameraPositionManager {
@@ -12,11 +12,11 @@ export class PlayerAndCameraPositionManager {
   gameState: GameState;
 
   cameraHeightFromPlayer = { value: .6, offset: 0 };
-  playerDistanceFromCamera = 100;
+  playerDistanceFromCamera = 320;
 
   heightLevel = 0;
-  lastAngleDirection = 0;
-  lastRadiusDirection = 0;
+  lastHorizontalAngleDirection = 0;
+  lastVerticalAngleDirection = 0;
 
   acceleration = 0;
 
@@ -62,17 +62,17 @@ export class PlayerAndCameraPositionManager {
 
   public update(time) {
 
-    console.log(this.camera.position);
-    console.log(this.cameraLookAt);
-    console.log(this.player.playerMesh.position);
+    // console.log(this.camera.position);
+    // console.log(this.cameraLookAt);
+    // console.log(this.player.playerMesh.position);
     if (!this.camera || !this.player || !this.player.playerMesh) {
       return;
     }
 
-    this.player.playerMesh.position.set(sin(time / 2) / 40,  sin(time * 2) / 20, sin(time) / 40);
+    this.player.playerMesh.position.set(sin(time * 4) / 10,  sin(time / 4) / 20, sin(time * 2) / 10);
 
     // camera static movement
-    this.cameraPolarPostion.radius += sin(time) / 10;
+    this.cameraPolarPostion.radius += sin(time) / 100;
     this.cameraPolarPostion.angle += cos(time) / 8000;
 
     this.cameraPolarPostion.y = this.cameraHeightFromPlayer.value + cos(time / 2) / 16 + this.cameraHeightFromPlayer.offset;
@@ -94,15 +94,16 @@ export class PlayerAndCameraPositionManager {
     }
     const newPolarPositionCamera = polarToCartesian(this.cameraPolarPostion.radius, this.cameraPolarPostion.angle);
 
-    this.camera.position.set(newPolarPositionCamera.x, this.playerPolarPostion.y + this.cameraPolarPostion.y, newPolarPositionCamera.y);
+    this.camera.position.set(0  , -20, 0);
 
     this.camera.lookAt(this.cameraLookAt);
   }
 
   updatePlayerPosition() {
     const newPolarPositionPlayer = polarToCartesian(this.playerPolarPostion.radius, this.playerPolarPostion.angle);
-    this.player.position.set(newPolarPositionPlayer.x, this.playerPolarPostion.y, newPolarPositionPlayer.y);
-    this.player.rotation.y = -this.playerPolarPostion.angle;
+    // this.player.position.set(newPolarPositionPlayer.x, this.playerPolarPostion.y, newPolarPositionPlayer.y);
+    // console.log(this.playerPolarPostion.angle);
+    // this.player.rotation.y = -this.playerPolarPostion.angle;
     this.gameState.playerPosition = this.player.position;
   }
 
@@ -119,30 +120,43 @@ export class PlayerAndCameraPositionManager {
     this.playerPolarPostion.angle = angle;
   }
 
-  setAngleDirection(direction) {
+  setAngleDirection(verticalDirection, horizontalDirection) {
 
-    if (direction === this.lastAngleDirection) {
+    if (verticalDirection === this.lastVerticalAngleDirection &&
+        horizontalDirection === this.lastHorizontalAngleDirection) {
       return;
     }
-    this.lastAngleDirection = direction;
+    this.lastVerticalAngleDirection = verticalDirection;
+    this.lastHorizontalAngleDirection = horizontalDirection;
 
-    const tween = new TWEEN.Tween(this.player.playerMesh.rotation)
-      .to({ x: direction * Math.PI / 8 }, 1000)
+    //console.log(verticalDirection, horizontalDirection);
+
+    const tweenHorizontalTilt = new TWEEN.Tween(this.player.playerMesh.rotation)
+      .to({
+        z: toRad(this.player.initialZRotDegrees) + horizontalDirection * Math.PI / 8,
+      }, 1000)
       .easing( TWEEN.Easing.Sinusoidal.InOut )
       .start();
 
+    const tweenVerticalTilt = new TWEEN.Tween(this.player.playerMesh.rotation)
+      .to({
+        x: toRad(this.player.initialXRotDegrees) + verticalDirection * Math.PI / 8
+      }, 600)
+      .easing( TWEEN.Easing.Cubic.InOut )
+      .start();
+
     const tween2 = new TWEEN.Tween(this.cameraAngleStearingOffset)
-      .to({ val: -direction / 400 }, 1000)
+      .to({ val: -verticalDirection / 400 }, 1000)
       .easing(TWEEN.Easing.Sinusoidal.InOut)
       .start();
 
   }
 
   setRadiusDirection(direction) {
-    if (direction === this.lastRadiusDirection) {
+    if (direction === this.lastVerticalAngleDirection) {
       return;
     }
-    this.lastRadiusDirection = direction;
+    this.lastVerticalAngleDirection = direction;
 
     const tween = new TWEEN.Tween(this.player.playerMesh.rotation)
       .to({ z: direction * Math.PI / 8 }, 600)

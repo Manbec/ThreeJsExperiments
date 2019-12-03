@@ -27,9 +27,8 @@ export class PolarControls extends SceneSubject {
   accelerationIncreaseStep = 0.02;
   accelerationDecreaseStep = 0.009;
 
-  currentAngle = 0;
   private angleAccelerator: AcceleratorControl;
-  private radAccelerator: AcceleratorControl;
+  private verticalAccelerator: AcceleratorControl;
 
   constructor(
     scene: THREE.Scene,
@@ -46,7 +45,7 @@ export class PolarControls extends SceneSubject {
     this.angleAccelerator = new AcceleratorControl(
       this.angleSpeed, this.acceletationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
 
-    this.radAccelerator = new AcceleratorControl(
+    this.verticalAccelerator = new AcceleratorControl(
       this.angleSpeed, this.acceletationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
 
   }
@@ -80,26 +79,20 @@ export class PolarControls extends SceneSubject {
   }
 
   update(time) {
-    const angleDirection = this.left ? 1 : this.right ? -1 : 0;
-    const radDirection = this.upwards ? -1 : this.down ? 1 : 0;
-    return;
+    const horizontalDirection = this.left ? 1 : this.right ? -1 : 0;
+    const verticalDirection = this.upwards ? -1 : this.down ? 1 : 0;
+
     this.angleAccelerator.increaseSpeedOf(this.gameConstants.speedStep);
 
-    const angleAcceleration = this.angleAccelerator.getForce(angleDirection);
-    this.currentAngle += angleAcceleration;
+    const horizontalAcceleration = this.angleAccelerator.getForce(horizontalDirection);
+    const verticalAcceleration = this.verticalAccelerator.getForce(verticalDirection);
 
-    const radAcceleration = this.radAccelerator.getForce(radDirection);
-    // const tRad = currentRadius + radAcceleration;
-    // if (tRad > this.gameConstants.minRadius && tRad < this.gameConstants.maxRadius {
-    //   currentRadius = tRad;
-   //  }
+    this.playerAndCameraPositionManager.setPosition(200, horizontalDirection);
 
-    this.playerAndCameraPositionManager.setPosition(200, this.currentAngle);
+    this.playerAndCameraPositionManager.setAcceleration( Math.max( Math.abs(horizontalAcceleration * 100) / 2, Math.abs(verticalAcceleration) ) );
 
-    this.playerAndCameraPositionManager.setAcceleration( Math.max( Math.abs(angleAcceleration * 100) / 2, Math.abs(radAcceleration) ) );
-
-    this.playerAndCameraPositionManager.setAngleDirection(angleDirection);
-    this.playerAndCameraPositionManager.setRadiusDirection(radDirection * - 1);
+    this.playerAndCameraPositionManager.setAngleDirection(verticalDirection * -1, horizontalDirection * -1);
+    // this.playerAndCameraPositionManager.setRadiusDirection(verticalDirection * - 1);
 
   }
 

@@ -5,18 +5,23 @@ import {PlayerShooter} from './player-shooter.subject';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader';
 import {group} from '@angular/animations';
 import {Euler, Group, Vector3} from 'three';
+import {toRad} from '../../../starhead.utils';
 
 export class Player extends SceneSubject {
 
   private group: Group;
-  position: Vector3;
-  rotation: Euler;
   acceleration: number;
   shooting: boolean;
   recoveringFromDamage: boolean;
   gameState: GameState;
   playerShooter: PlayerShooter;
   playerMesh: Group;
+  public rotation: Euler;
+  public position: Vector3;
+
+  public initialXRotDegrees = 90;
+  public initialYRotDegrees = 180;
+  public initialZRotDegrees = 0;
 
   constructor(scene: THREE.Scene, gameState: GameState, playerShooter: PlayerShooter) {
     super(scene);
@@ -29,8 +34,8 @@ export class Player extends SceneSubject {
 
     this.loadPlayerMesh();
 
-    this.position.set(this.group.position.x, this.group.position.y, this.group.position.z);
-    this.rotation.set(this.group.rotation.x, this.group.rotation.y, this.group.rotation.z);
+    this.position = this.group.position;
+    this.rotation = this.group.rotation;
 
     this.acceleration = 0;
     this.shooting = false;
@@ -65,7 +70,11 @@ export class Player extends SceneSubject {
   loadPlayerMesh() {
     const loader = new OBJLoader();
     loader.load('assets/3Dmodels/silver-hawk-next/source/shawk13.obj.obj',  (player) => {
-      console.log(player);
+    // loader.load('assets/3Dmodels/portrait/source/P1_7 DISP.OBJ',  (player) => {
+
+      const scale = .2;
+      player.scale.set(scale, scale, scale);
+
       this.group.add(player);
 
       const playerPointLight = new THREE.PointLight( '#F1F1F1', .3, 20);
@@ -73,6 +82,7 @@ export class Player extends SceneSubject {
       this.group.add( playerPointLight );
 
       this.playerMesh = player;
+      this.playerMesh.rotation.set(toRad(this.initialXRotDegrees), toRad(this.initialYRotDegrees), toRad(this.initialZRotDegrees));
 
     });
   }

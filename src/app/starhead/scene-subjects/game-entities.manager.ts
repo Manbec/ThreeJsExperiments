@@ -77,7 +77,7 @@ export class GameEntitiesManager extends SceneSubject {
     }
   }
 
-  checkCollisionWithPlayer(array1: SceneSubject[], player) {
+  checkCollisionWithPlayer(array1: any[], player) {
     for (let i = 0; i < array1.length; i++) {
       const el1 = array1[i];
 

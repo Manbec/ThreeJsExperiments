@@ -22,7 +22,7 @@ export class GameStateManagementService {
 
   gameConstants: GameConstants = {
     speedStep: 0,
-    baseLevelHeight: 85,
+    baseLevelHeight: 25,
   };
 
   gameState: GameState;
