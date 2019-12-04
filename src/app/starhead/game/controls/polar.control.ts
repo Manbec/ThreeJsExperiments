@@ -20,15 +20,17 @@ export class PolarControls extends SceneSubject {
   private upwards = false;
   private down = false;
 
-  angleSpeed = 0.02;
-  radSpeed = 1;
+  angleSpeed = .12;
+  radSpeed = 1.1;
 
   acceletationMax = 1;
-  accelerationIncreaseStep = 0.02;
-  accelerationDecreaseStep = 0.009;
+  accelerationIncreaseStep = 0.12;
+  accelerationDecreaseStep = 0.109;
 
-  private angleAccelerator: AcceleratorControl;
+  private horizontalAccelerator: AcceleratorControl;
   private verticalAccelerator: AcceleratorControl;
+  private currentHorizontalPosition = 0;
+  private currentVerticalPosition = 0;
 
   constructor(
     scene: THREE.Scene,
@@ -42,7 +44,7 @@ export class PolarControls extends SceneSubject {
     this.gameConstants = gameConstants;
     this.gameState = gameState;
 
-    this.angleAccelerator = new AcceleratorControl(
+    this.horizontalAccelerator = new AcceleratorControl(
       this.angleSpeed, this.acceletationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
 
     this.verticalAccelerator = new AcceleratorControl(
@@ -82,17 +84,26 @@ export class PolarControls extends SceneSubject {
     const horizontalDirection = this.left ? 1 : this.right ? -1 : 0;
     const verticalDirection = this.upwards ? -1 : this.down ? 1 : 0;
 
-    this.angleAccelerator.increaseSpeedOf(this.gameConstants.speedStep);
+    this.horizontalAccelerator.increaseSpeedOf(this.gameConstants.speedStep);
 
-    const horizontalAcceleration = this.angleAccelerator.getForce(horizontalDirection);
+    const horizontalAcceleration = this.horizontalAccelerator.getForce(horizontalDirection);
+    const horizontalPosition = this.currentHorizontalPosition + horizontalAcceleration;
+    if (horizontalPosition < this.gameConstants.playerMaxX && horizontalPosition > this.gameConstants.playerMinX) {
+      this.currentHorizontalPosition = horizontalPosition;
+    }
+
     const verticalAcceleration = this.verticalAccelerator.getForce(verticalDirection);
+    const verticalPosition = this.currentVerticalPosition + verticalAcceleration;
+    if (verticalPosition < this.gameConstants.playerMaxY && verticalPosition > this.gameConstants.playerMinY) {
+      this.currentVerticalPosition = verticalPosition;
+    }
 
-    this.playerAndCameraPositionManager.setPosition(200, horizontalDirection);
+    this.playerAndCameraPositionManager.setPosition(this.currentHorizontalPosition, this.currentVerticalPosition);
 
-    this.playerAndCameraPositionManager.setAcceleration( Math.max( Math.abs(horizontalAcceleration * 100) / 2, Math.abs(verticalAcceleration) ) );
-
+    this.playerAndCameraPositionManager.setAcceleration(
+      Math.max( Math.abs(horizontalAcceleration * 100) / 2, Math.abs(verticalAcceleration) )
+    );
     this.playerAndCameraPositionManager.setAngleDirection(verticalDirection * -1, horizontalDirection * -1);
-    // this.playerAndCameraPositionManager.setRadiusDirection(verticalDirection * - 1);
 
   }
 

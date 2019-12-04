@@ -6,6 +6,7 @@ import {GameEntitiesManager} from './scene-subjects/game-entities.manager';
 import {PlayerAndCameraPositionManager} from './starhead.camera-player-position-manager.component';
 import {MouseControls} from './game/controls/mouse.control';
 import {PolarControls} from './game/controls/polar.control';
+import {Nebula} from './scene-subjects/nebula';
 
 export class SceneManager {
 
@@ -108,6 +109,7 @@ export class SceneManager {
   createSceneSubjects(scene: THREE.Scene, gameConstants: { speedStep: number }) {
     const sceneSubjects: SceneSubject[] = [
       new Lights(scene),
+      new Nebula(scene),
       // new SceneSubject(scene)
     ];
 
@@ -137,6 +139,8 @@ export class SceneManager {
 
   onWindowResize = (): void => {
     const { width, height } = this.canvas;
+
+    console.log(width, height);
 
     this.screenDimensions.width = width;
     this.screenDimensions.height = height;

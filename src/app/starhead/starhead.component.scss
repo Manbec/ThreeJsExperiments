@@ -2,7 +2,17 @@
   opacity: 0.0;
 }
 
-#gameCanvas {
-  width: 100vw;
-  height: 100vh;
+.game-canvas-container {
+  width: 100%;
+  height: 100%;
+
+  background-color: aquamarine;
+  position: absolute;
+  overflow: hidden;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

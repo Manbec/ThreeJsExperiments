@@ -11,6 +11,10 @@ export interface GameState {
 export interface GameConstants {
   speedStep: number;
   baseLevelHeight: number;
+  playerMaxY: number;
+  playerMinY: number;
+  playerMaxX: number;
+  playerMinX: number;
 }
 
 @Injectable({
@@ -23,6 +27,10 @@ export class GameStateManagementService {
   gameConstants: GameConstants = {
     speedStep: 0,
     baseLevelHeight: 25,
+    playerMaxY: 10,
+    playerMinY: -10,
+    playerMaxX: 12,
+    playerMinX: -12
   };
 
   gameState: GameState;

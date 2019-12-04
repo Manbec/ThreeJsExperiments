@@ -72,7 +72,7 @@ export class Player extends SceneSubject {
     loader.load('assets/3Dmodels/silver-hawk-next/source/shawk13.obj.obj',  (player) => {
     // loader.load('assets/3Dmodels/portrait/source/P1_7 DISP.OBJ',  (player) => {
 
-      const scale = .2;
+      const scale = .1;
       player.scale.set(scale, scale, scale);
 
       this.group.add(player);

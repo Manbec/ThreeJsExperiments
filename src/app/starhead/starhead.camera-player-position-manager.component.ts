@@ -22,8 +22,8 @@ export class PlayerAndCameraPositionManager {
 
   cameraLookAt = new THREE.Vector3(0, 100, 0);
 
-  private cameraPolarPostion: { angle: number; y: number; radius: number };
-  private playerPolarPostion: { angle: number; y: any; radius: number };
+  private cameraPolarPosition: { angle: number; y: number; radius: number };
+  private playerPolarPosition: { horizontalPosition: number; y: any; verticalPosition: number };
 
   cameraAngleStearingOffset = { val: 0 };
 
@@ -36,15 +36,15 @@ export class PlayerAndCameraPositionManager {
     this.player = player;
     this.gameState = gameState;
 
-    this.cameraPolarPostion = {
+    this.cameraPolarPosition = {
       radius: 0,
       angle: 0,
       y: this.cameraHeightFromPlayer.value
     };
 
-    this.playerPolarPostion = {
-      radius: 0,
-      angle: 0,
+    this.playerPolarPosition = {
+      verticalPosition: 0,
+      horizontalPosition: 0,
       y: gameConstants.baseLevelHeight
     };
 
@@ -72,17 +72,17 @@ export class PlayerAndCameraPositionManager {
     this.player.playerMesh.position.set(sin(time * 4) / 10,  sin(time / 4) / 20, sin(time * 2) / 10);
 
     // camera static movement
-    this.cameraPolarPostion.radius += sin(time) / 100;
-    this.cameraPolarPostion.angle += cos(time) / 8000;
+    this.cameraPolarPosition.radius += sin(time) / 100;
+    this.cameraPolarPosition.angle += cos(time) / 8000;
 
-    this.cameraPolarPostion.y = this.cameraHeightFromPlayer.value + cos(time / 2) / 16 + this.cameraHeightFromPlayer.offset;
+    this.cameraPolarPosition.y = this.cameraHeightFromPlayer.value + cos(time / 2) / 16 + this.cameraHeightFromPlayer.offset;
 
     // camera acceleration movement
     const acc = this.acceleration >=  0.975 ? 1 / 2 : this.acceleration / 2;
-    this.cameraPolarPostion.radius += sin(acc) * 2;
-    this.cameraPolarPostion.y += sin(acc) / 1.5;
+    this.cameraPolarPosition.radius += sin(acc) * 2;
+    this.cameraPolarPosition.y += sin(acc) / 1.5;
 
-    this.cameraPolarPostion.angle += this.cameraAngleStearingOffset.val;
+    this.cameraPolarPosition.angle += this.cameraAngleStearingOffset.val;
 
     this.updateCameraPosition();
     this.updatePlayerPosition();
@@ -92,7 +92,6 @@ export class PlayerAndCameraPositionManager {
     if (!this.camera) {
       return;
     }
-    const newPolarPositionCamera = polarToCartesian(this.cameraPolarPostion.radius, this.cameraPolarPostion.angle);
 
     this.camera.position.set(0  , -20, 0);
 
@@ -100,36 +99,32 @@ export class PlayerAndCameraPositionManager {
   }
 
   updatePlayerPosition() {
-    const newPolarPositionPlayer = polarToCartesian(this.playerPolarPostion.radius, this.playerPolarPostion.angle);
-    // this.player.position.set(newPolarPositionPlayer.x, this.playerPolarPostion.y, newPolarPositionPlayer.y);
-    // console.log(this.playerPolarPostion.angle);
-    // this.player.rotation.y = -this.playerPolarPostion.angle;
+
+    this.player.playerMesh.position.set(this.player.position.x - this.playerPolarPosition.horizontalPosition, this.player.position.y,
+      this.player.position.z - this.playerPolarPosition.verticalPosition);
     this.gameState.playerPosition = this.player.position;
+
   }
 
   setAcceleration(a) {
+    // console.log('acceleration ', a);
     this.player.acceleration = a;
     this.acceleration = a;
   }
 
-  setPosition(radius, angle) {
-    this.cameraPolarPostion.radius = radius;
-    this.cameraPolarPostion.angle = angle;
-
-    this.playerPolarPostion.radius = radius - this.playerDistanceFromCamera;
-    this.playerPolarPostion.angle = angle;
+  setPosition(horizontalPosition, verticalPosition) {
+    this.playerPolarPosition.horizontalPosition = horizontalPosition;
+    this.playerPolarPosition.verticalPosition = verticalPosition;
   }
 
   setAngleDirection(verticalDirection, horizontalDirection) {
-
     if (verticalDirection === this.lastVerticalAngleDirection &&
         horizontalDirection === this.lastHorizontalAngleDirection) {
       return;
     }
+
     this.lastVerticalAngleDirection = verticalDirection;
     this.lastHorizontalAngleDirection = horizontalDirection;
-
-    //console.log(verticalDirection, horizontalDirection);
 
     const tweenHorizontalTilt = new TWEEN.Tween(this.player.playerMesh.rotation)
       .to({
@@ -168,7 +163,7 @@ export class PlayerAndCameraPositionManager {
   changeHeightLevel(newHeightLevel) {
     this.heightLevel = newHeightLevel;
 
-    const tween = new TWEEN.Tween(this.playerPolarPostion)
+    const tween = new TWEEN.Tween(this.playerPolarPosition)
       .to({ y: this.gameConstants.baseLevelHeight }, 400)
       .easing(TWEEN.Easing.Cubic.InOut)
       .start();
