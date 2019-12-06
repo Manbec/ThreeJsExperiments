@@ -11,6 +11,7 @@ import TWEEN from '@tweenjs/tween.js';
 export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('gameCanvasEl', { static: false }) gameCanvasEl: ElementRef;
+  @ViewChild('aim', { static: false }) aim: ElementRef;
   private canvas: HTMLCanvasElement;
   private sceneManager: SceneManager;
 
@@ -47,6 +48,7 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
     window.onkeyup = this.onKeyUp;
     window.onmousedown = this.onMouseDown;
     window.onmouseup = this.onMouseUp;
+    window.onmousemove = this.onMouseMove;
     this.resizeCanvas();
   }
 
@@ -74,6 +76,19 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onMouseUp = (event) => {
     this.sceneManager.onMouseUp(event);
+  }
+
+  onMouseMove = (event) => {
+    console.log(event);
+    const x = event.clientX - 56; // 50px width of square plus borders widths
+    const y = event.clientY - 56; // 50px width of square plus borders widths
+
+    if (!x || !y) {
+      return;
+    }
+
+    this.aim.nativeElement.style.setProperty('--x', `${x}px`);
+    this.aim.nativeElement.style.setProperty('--y', `${y}px`);
   }
 
   gameLoop = (time = 0) => {
