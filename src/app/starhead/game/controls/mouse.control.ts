@@ -67,7 +67,7 @@ export class MouseControls extends SceneSubject {
   }
 
   onLeftClickDown() {
-   this.player.setShooting(true);
+    this.player.setShooting(true);
   }
 
   onLeftClickUp() {

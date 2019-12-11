@@ -79,7 +79,6 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onMouseMove = (event) => {
-    console.log(event);
     const x = event.clientX - 56; // 50px width of square plus borders widths
     const y = event.clientY - 56; // 50px width of square plus borders widths
 

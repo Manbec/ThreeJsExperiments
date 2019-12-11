@@ -98,7 +98,7 @@ export class Player extends SceneSubject {
   }
 
   shoot() {
-    this.playerShooter.shoot( new THREE.Vector3(this.group.position.x, this.group.position.y - 1, this.group.position.z) );
+    this.playerShooter.shoot( new THREE.Vector3(this.playerMesh.position.x, this.playerMesh.position.y - 1, this.playerMesh.position.z) );
   }
 
   setShooting(shooting: boolean) {
