@@ -62,7 +62,7 @@ export class BulletRaycastWall extends SceneSubject {
     this.bulletRayCastWall = new Mesh( geometry, planeMaterials );
     console.log(this.bulletRayCastWall.material);
     this.bulletRayCastWall.material[0].transparent = true;
-    this.bulletRayCastWall.material[0].opacity = 0.2;
+    this.bulletRayCastWall.material[0].opacity = 0.0;
     this.scene.add( this.bulletRayCastWall );
 
   }

@@ -38,6 +38,9 @@ export class GameEntitiesManager extends SceneSubject {
     this.player.update(elapsedTime);
     // this.walt.update(elapsedTime);
     this.playerShooter.update(elapsedTime);
+    this.waltHead.update(elapsedTime);
+    this.waltLeftHand.update(elapsedTime);
+    this.waltRightHand.update(elapsedTime);
 
     if (!this.gameStarted) {
       return;
