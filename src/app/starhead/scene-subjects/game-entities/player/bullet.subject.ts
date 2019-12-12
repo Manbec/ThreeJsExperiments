@@ -2,6 +2,7 @@ import {ShooterComponentSubject} from '../shooter.subject';
 import {Color, Mesh, MeshBasicMaterial, Scene, SphereBufferGeometry, Vector3} from 'three';
 import {cartesianToPolar, cos, getRandom, sin} from '../../../starhead.utils';
 import {GameConstants} from '../../../services/game-state-management.service';
+import TWEEN from '@tweenjs/tween.js';
 
 export class Bullet extends ShooterComponentSubject {
 
@@ -19,7 +20,9 @@ export class Bullet extends ShooterComponentSubject {
   private readonly maxScaleZ: number;
   private gameConstants: GameConstants;
 
-  constructor(scene: Scene, originPosition: Vector3, gameConstants: GameConstants, color: string) {
+  constructor(scene: Scene,
+              originPosition: Vector3, destinationPosition: Vector3,
+              gameConstants: GameConstants, color: string) {
     super(scene);
 
     this.scene = scene;
@@ -42,16 +45,26 @@ export class Bullet extends ShooterComponentSubject {
     this.collision = false;
     this.position = this.bulletMesh.position;
 
+    const tweenBulletPath = new TWEEN.Tween(this.bulletMesh.position)
+      .to({
+        x: destinationPosition.x,
+        y: destinationPosition.y,
+        z: destinationPosition.z,
+      }, 1500)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .start();
+
   }
 
 
   public update(elapsedTime: number): boolean {
 
+    return false;
     this.polarCoords.radius -= this.speed;
 
-    console.log(this.polarCoords);
-    this.bulletMesh.position.x = (this.polarCoords.radius) * cos(this.polarCoords.angle);
-    this.bulletMesh.position.z = (this.polarCoords.radius) * sin(this.polarCoords.angle);
+    // console.log(this.polarCoords);
+    // this.bulletMesh.position.x = (this.polarCoords.radius) * cos(this.polarCoords.angle);
+    // this.bulletMesh.position.z = (this.polarCoords.radius) * sin(this.polarCoords.angle);
 
     this.updateScale(this.polarCoords);
 

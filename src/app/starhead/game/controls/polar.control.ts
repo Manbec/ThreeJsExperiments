@@ -21,11 +21,10 @@ export class PolarControls extends SceneSubject {
   private down = false;
 
   angleSpeed = .12;
-  radSpeed = 1.1;
 
-  acceletationMax = 1;
-  accelerationIncreaseStep = 0.12;
-  accelerationDecreaseStep = 0.109;
+  accelerationMax = 3;
+  accelerationIncreaseStep = 0.14;
+  accelerationDecreaseStep = 0.129;
 
   private horizontalAccelerator: AcceleratorControl;
   private verticalAccelerator: AcceleratorControl;
@@ -45,10 +44,10 @@ export class PolarControls extends SceneSubject {
     this.gameState = gameState;
 
     this.horizontalAccelerator = new AcceleratorControl(
-      this.angleSpeed, this.acceletationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
+      this.angleSpeed, this.accelerationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
 
     this.verticalAccelerator = new AcceleratorControl(
-      this.angleSpeed, this.acceletationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
+      this.angleSpeed, this.accelerationMax, this.accelerationIncreaseStep, this.accelerationDecreaseStep);
 
   }
 

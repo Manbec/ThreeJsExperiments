@@ -264,6 +264,7 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
       // get a link from the userData object
       window.open(this.diamondsGroup.children[0].userData.URL);
     }
+
   }
 
   animate = () => {

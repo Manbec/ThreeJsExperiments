@@ -7,6 +7,7 @@ import {PlayerAndCameraPositionManager} from './starhead.camera-player-position-
 import {MouseControls} from './game/controls/mouse.control';
 import {PolarControls} from './game/controls/polar.control';
 import {Nebula} from './scene-subjects/nebula';
+import * as _ from 'lodash';
 
 export class SceneManager {
 
@@ -49,6 +50,7 @@ export class SceneManager {
     // these should be SceneSubjects
     this.gameEntitiesManager = new GameEntitiesManager(
       this.scene,
+      this.camera,
       gameStateManagementService.gameConstants,
       gameStateManagementService.gameState);
     this.playerAndCameraPositionManager = new PlayerAndCameraPositionManager(
@@ -90,7 +92,7 @@ export class SceneManager {
     const aspectRatio = width / height;
     const fieldOfView = 60;
     const nearPlane = 1;
-    const farPlane = 1000;
+    const farPlane = 1200;
     const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 
     return camera;
@@ -140,8 +142,6 @@ export class SceneManager {
   onWindowResize = (): void => {
     const { width, height } = this.canvas;
 
-    console.log(width, height);
-
     this.screenDimensions.width = width;
     this.screenDimensions.height = height;
 
@@ -149,6 +149,9 @@ export class SceneManager {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(width, height);
+
+    this.playerAndCameraPositionManager.onWindowResize(width, height);
+
   }
 
 
@@ -194,6 +197,9 @@ export class SceneManager {
   onMouseDown(event) {
     if (!this.gameStateManagementService.gameState.enableUserInput) {
       return;
+    }
+    if (_.get(this, 'gameEntitiesManager.player.bulletAimWall', false)) {
+      this.gameEntitiesManager.player.bulletAimWall.onMouseDown(event);
     }
     this.controls.mouse.onMouseDown(event);
   }

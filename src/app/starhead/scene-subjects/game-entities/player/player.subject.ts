@@ -1,11 +1,10 @@
-import * as THREE from 'three';
 import {SceneSubject} from '../../scene.subject';
 import {GameState} from '../../../services/game-state-management.service';
 import {PlayerShooter} from './player-shooter.subject';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader';
-import {group} from '@angular/animations';
-import {Euler, Group, Vector3} from 'three';
+import {Camera, Euler, Group, PointLight, Scene, Vector3} from 'three';
 import {toRad} from '../../../starhead.utils';
+import {BulletRaycastWall} from './bullet-raycast-wall.subject';
 
 export class Player extends SceneSubject {
 
@@ -23,7 +22,9 @@ export class Player extends SceneSubject {
   public initialYRotDegrees = 180;
   public initialZRotDegrees = 0;
 
-  constructor(scene: THREE.Scene, gameState: GameState, playerShooter: PlayerShooter) {
+  bulletAimWall: BulletRaycastWall;
+
+  constructor(scene: Scene, gameState: GameState, playerShooter: PlayerShooter, camera: Camera) {
     super(scene);
 
     this.gameState = gameState;
@@ -33,9 +34,12 @@ export class Player extends SceneSubject {
     scene.add( this.group );
 
     this.loadPlayerMesh();
+    this.bulletAimWall = new BulletRaycastWall(scene, camera);
 
     this.position = this.group.position;
     this.rotation = this.group.rotation;
+
+    this.bulletAimWall.setPosition(this.position.x, this.position.y + 1100, this.position.z);
 
     this.acceleration = 0;
     this.shooting = false;
@@ -47,9 +51,8 @@ export class Player extends SceneSubject {
   public update(elapsedTime: number): void {
 
     if (this.shooting === true) {
-      this.shoot();
+      this.shoot(this.bulletAimWall.raycastWallIntersectionLocation);
     }
-
     // this.fadeMesh(time);
 
   }
@@ -77,7 +80,7 @@ export class Player extends SceneSubject {
 
       this.group.add(player);
 
-      const playerPointLight = new THREE.PointLight( '#F1F1F1', .3, 20);
+      const playerPointLight = new PointLight( '#F1F1F1', .3, 20);
       playerPointLight.position.set( 1, 1, 0 );
       this.group.add( playerPointLight );
 
@@ -97,12 +100,17 @@ export class Player extends SceneSubject {
 
   }
 
-  shoot() {
-    this.playerShooter.shoot( new THREE.Vector3(this.playerMesh.position.x, this.playerMesh.position.y - 1, this.playerMesh.position.z) );
+  shoot(destinationPosition: Vector3) {
+    const originPosition = new Vector3(this.playerMesh.position.x, this.playerMesh.position.y + 5.5, this.playerMesh.position.z - 1);
+    this.playerShooter.shoot(originPosition, destinationPosition);
   }
 
   setShooting(shooting: boolean) {
     this.shooting = shooting;
+  }
+
+  onWindowResize(width: number, height: number) {
+    this.bulletAimWall.onWindowResize(width, height);
   }
 
 }

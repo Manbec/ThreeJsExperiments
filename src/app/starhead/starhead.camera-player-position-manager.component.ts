@@ -147,27 +147,8 @@ export class PlayerAndCameraPositionManager {
 
   }
 
-  setRadiusDirection(direction) {
-    if (direction === this.lastVerticalAngleDirection) {
-      return;
-    }
-    this.lastVerticalAngleDirection = direction;
-
-    const tween = new TWEEN.Tween(this.player.playerMesh.rotation)
-      .to({ z: direction * Math.PI / 8 }, 600)
-      .easing(TWEEN.Easing.Sinusoidal.InOut)
-      .start();
-
-  }
-
-  changeHeightLevel(newHeightLevel) {
-    this.heightLevel = newHeightLevel;
-
-    const tween = new TWEEN.Tween(this.playerPolarPosition)
-      .to({ y: this.gameConstants.baseLevelHeight }, 400)
-      .easing(TWEEN.Easing.Cubic.InOut)
-      .start();
-
+  onWindowResize(width: number, height: number) {
+    this.player.onWindowResize(width, height);
   }
 
 }

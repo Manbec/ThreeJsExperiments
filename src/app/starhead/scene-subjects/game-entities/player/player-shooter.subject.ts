@@ -2,6 +2,7 @@ import {ShooterComponentSubject} from '../shooter.subject';
 import {Scene, Vector3} from 'three';
 import {Bullet} from './bullet.subject';
 import {GameConstants} from '../../../services/game-state-management.service';
+import {BulletRaycastWall} from './bullet-raycast-wall.subject';
 
 export class PlayerShooter extends ShooterComponentSubject {
 
@@ -34,13 +35,13 @@ export class PlayerShooter extends ShooterComponentSubject {
     }
   }
 
-  shoot(originPosition: Vector3) {
+  shoot(originPosition: Vector3, destinationPosition: Vector3) {
     if (this.currentTime - this.lastShootTime < this.shootDelay) {
       return;
     }
 
     const bullet = this.bulletsCache.length !== 0 ? this.bulletsCache.pop().reset(originPosition) :
-      new Bullet(this.scene, originPosition, this.gameConstants, this.bulletsColor);
+      new Bullet(this.scene, originPosition, destinationPosition, this.gameConstants, this.bulletsColor);
     this.bullets.push(bullet);
 
     this.lastShootTime = this.currentTime;
