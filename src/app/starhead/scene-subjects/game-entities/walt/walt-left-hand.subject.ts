@@ -12,9 +12,10 @@ export class WaltLeftHand extends SceneSubject {
 
   bullets: Bullet[] = [];
   private scene: Scene;
-  private waltLeftHand: any;
+  public waltLeftHand: any;
   private waltGroup: Object3D;
   private waltLeftHandAnimationMixer: AnimationMixer;
+  public boundingSphereRad = 200;
 
   constructor(scene: THREE.Scene) {
     super(scene);
@@ -50,6 +51,7 @@ export class WaltLeftHand extends SceneSubject {
       object.scale.x = -2;
 
       this.waltLeftHand = object;
+      this.waltLeftHand.boundingSphereRad = this.boundingSphereRad;
       this.waltGroup.add(this.waltLeftHand);
 
       this.scene.add(this.waltLeftHand);

@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import {GameStateManagementService} from './services/game-state-management.service';
 import {SceneSubject} from './scene-subjects/scene.subject';
 import {Lights} from './scene-subjects/lights';
@@ -8,15 +7,16 @@ import {MouseControls} from './game/controls/mouse.control';
 import {PolarControls} from './game/controls/polar.control';
 import {Nebula} from './scene-subjects/nebula';
 import * as _ from 'lodash';
+import {Clock, Color, PerspectiveCamera, Scene, WebGLRenderer} from 'three';
 
 export class SceneManager {
 
   private canvas: HTMLCanvasElement;
-  private clock: THREE.Clock;
+  private clock: Clock;
   private screenDimensions: { width: number; height: number };
-  private scene: THREE.Scene;
-  private renderer: THREE.WebGLRenderer;
-  private camera: THREE.PerspectiveCamera;
+  private scene: Scene;
+  private renderer: WebGLRenderer;
+  private camera: PerspectiveCamera;
   private sceneSubjects: SceneSubject[];
 
   /*
@@ -35,7 +35,7 @@ export class SceneManager {
 
     this.canvas = canvas;
 
-    this.clock = new THREE.Clock();
+    this.clock = new Clock();
 
     this.screenDimensions = {
       width: this.canvas.clientWidth,
@@ -69,15 +69,15 @@ export class SceneManager {
 
   }
 
-  buildScene(): THREE.Scene {
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#000');
+  buildScene(): Scene {
+    const scene = new Scene();
+    scene.background = new Color('#000');
 
     return scene;
   }
 
-  buildRender({ width, height }): THREE.WebGLRenderer {
-    const renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+  buildRender({ width, height }): WebGLRenderer {
+    const renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
     const DPR = (window.devicePixelRatio) ? window.devicePixelRatio : 1;
     renderer.setPixelRatio(DPR);
     renderer.setSize(width, height);
@@ -88,12 +88,12 @@ export class SceneManager {
     return renderer;
   }
 
-  buildCamera({ width, height }): THREE.PerspectiveCamera {
+  buildCamera({ width, height }): PerspectiveCamera {
     const aspectRatio = width / height;
     const fieldOfView = 60;
     const nearPlane = 1;
     const farPlane = 1200;
-    const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+    const camera = new PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 
     return camera;
   }
@@ -108,7 +108,7 @@ export class SceneManager {
     return controls;
   }
 
-  createSceneSubjects(scene: THREE.Scene, gameConstants: { speedStep: number }) {
+  createSceneSubjects(scene: Scene, gameConstants: { speedStep: number }) {
     const sceneSubjects: SceneSubject[] = [
       new Lights(scene),
       new Nebula(scene),

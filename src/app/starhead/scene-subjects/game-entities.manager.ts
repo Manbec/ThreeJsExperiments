@@ -3,10 +3,11 @@ import {SceneSubject} from './scene.subject';
 import {Camera, Scene, Vector3} from 'three';
 import {Player} from './game-entities/player/player.subject';
 import {PlayerShooter} from './game-entities/player/player-shooter.subject';
-import {GameConstants, GameState} from '../services/game-state-management.service';
+import {GameConstants} from '../services/game-state-management.service';
 import {WaltHead} from './game-entities/walt/walt-head.subject';
 import {WaltLeftHand} from './game-entities/walt/walt-left-hand.subject';
 import {WaltRightHand} from './game-entities/walt/walt-right-hand.subject';
+import {GameStateModel} from '../game/game-state/models/game-state.model';
 
 export class GameEntitiesManager extends SceneSubject {
 
@@ -15,13 +16,12 @@ export class GameEntitiesManager extends SceneSubject {
   waltHead: WaltHead;
   waltLeftHand: WaltLeftHand;
   waltRightHand: WaltRightHand;
-
-  public gameStarted = false;
+  gameState: GameStateModel;
 
   constructor(scene: Scene,
               camera: Camera,
               gameConstants: GameConstants,
-              gameState: GameState
+              gameState: GameStateModel
               ) {
     super(scene);
 
@@ -30,6 +30,7 @@ export class GameEntitiesManager extends SceneSubject {
     this.waltHead = new WaltHead(scene);
     this.waltLeftHand = new WaltLeftHand(scene);
     this.waltRightHand = new WaltRightHand(scene);
+    this.gameState = gameState;
 
   }
 
@@ -42,7 +43,7 @@ export class GameEntitiesManager extends SceneSubject {
     this.waltLeftHand.update(elapsedTime);
     this.waltRightHand.update(elapsedTime);
 
-    if (!this.gameStarted) {
+    if (!this.gameState.gameStarted) {
       return;
     }
 
@@ -54,24 +55,31 @@ export class GameEntitiesManager extends SceneSubject {
       ...this.waltRightHand.getBullets()
     ];
 
-    this.checkCollisionWithTargets(playerBullets, [this.waltHead, this.waltRightHand, this.waltLeftHand]);
+    this.checkCollisionWithTargets(playerBullets, [
+      this.waltHead.waltHead,
+      this.waltRightHand.waltRightHand,
+      this.waltLeftHand.waltLeftHand
+    ]);
     this.checkCollisionWithPlayer(enemyBullets, this.player);
 
   }
 
   checkCollisionWithTargets(playerBullets, targets) {
+    // console.log(playerBullets, targets);
     for (let i = 0; i < playerBullets.length; i++) {
       const bullet = playerBullets[i];
 
       for (let j = 0; j < targets.length; j++) {
         const target = targets[j];
-
+        // console.log(bullet.position, target.position);
         if (target.collision === true) {
           continue;
         }
 
         const distance = bullet.position.distanceTo( target.position );
+        // console.log('distant bullet to target ', j, ' ', target, ' = ', distance, '. For radius ', target, target.boundingSphereRad);
         if (distance < target.boundingSphereRad) {
+          // console.log("HIT!!!!!", j);
           bullet.collision = true;
           target.collision = true;
 

@@ -31,6 +31,16 @@
   justify-content: center;
 }
 
+.start-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  background-color: rgba(175,233,204,0.41);
+}
+
 .aim-gui-container {
   position: absolute;
   z-index: 1;

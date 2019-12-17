@@ -1,17 +1,17 @@
 import {ShooterComponentSubject} from '../shooter.subject';
 import {Color, Mesh, MeshBasicMaterial, Scene, SphereBufferGeometry, Vector3} from 'three';
-import {cartesianToPolar, cos, getRandom, sin} from '../../../starhead.utils';
+import {getRandom} from '../../../starhead.utils';
 import {GameConstants} from '../../../services/game-state-management.service';
 import TWEEN from '@tweenjs/tween.js';
 
 export class Bullet extends ShooterComponentSubject {
 
-  speed = 8;
+  speed = 2;
 
   geometryBulletPlayer = new SphereBufferGeometry( .4, 16, 16 );
   materialBulletPlayer = new MeshBasicMaterial();
   blueprintBulletPlayer: Mesh;
-  private readonly polarCoords: { angle: number; radius: number };
+  private timeAlive: number;
   private position: Vector3;
   private readonly bulletMesh: Mesh;
   private scene: Scene;
@@ -40,10 +40,52 @@ export class Bullet extends ShooterComponentSubject {
     this.maxScaleZ = getRandom(.5, 1.5);
     this.bulletMesh.scale.set(this.maxScaleX, this.maxScaleY, this.maxScaleZ);
 
-    this.polarCoords = cartesianToPolar(originPosition.x, originPosition.z);
+    this.timeAlive = 100;
 
     this.collision = false;
     this.position = this.bulletMesh.position;
+
+    if (destinationPosition) {
+      const tweenBulletPath = new TWEEN.Tween(this.bulletMesh.position)
+        .to({
+          x: destinationPosition.x,
+          y: destinationPosition.y,
+          z: destinationPosition.z,
+        }, 1500)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+    }
+
+  }
+
+
+  public update(elapsedTime: number): boolean {
+
+    this.timeAlive -= this.speed;
+
+    // console.log(this.polarCoords);
+    // this.bulletMesh.position.x = (this.polarCoords.radius) * cos(this.polarCoords.angle);
+    // this.bulletMesh.position.z = (this.polarCoords.radius) * sin(this.polarCoords.angle);
+
+
+    console.log('expired', this.timeAlive, this.collision);
+    const expired = this.timeAlive < 0 || this.collision === true;
+    if (expired && this.bulletMesh && this.scene) {
+      this.scene.remove(this.bulletMesh);
+    }
+
+    return expired;
+
+  }
+
+  reset(newOrigin, destinationPosition: Vector3) {
+
+    this.bulletMesh.position.set(newOrigin.x, newOrigin.y, newOrigin.z);
+    this.timeAlive = 100;
+
+    this.collision = false;
+
+    this.scene.add(this.bulletMesh);
 
     const tweenBulletPath = new TWEEN.Tween(this.bulletMesh.position)
       .to({
@@ -53,40 +95,6 @@ export class Bullet extends ShooterComponentSubject {
       }, 1500)
       .easing(TWEEN.Easing.Cubic.InOut)
       .start();
-
-  }
-
-
-  public update(elapsedTime: number): boolean {
-
-    return false;
-    this.polarCoords.radius -= this.speed;
-
-    // console.log(this.polarCoords);
-    // this.bulletMesh.position.x = (this.polarCoords.radius) * cos(this.polarCoords.angle);
-    // this.bulletMesh.position.z = (this.polarCoords.radius) * sin(this.polarCoords.angle);
-
-    this.updateScale(this.polarCoords);
-
-    const expired = this.polarCoords.radius < 0 || this.collision === true;
-    if (expired) {
-      this.scene.remove(this.bulletMesh);
-    }
-
-    return expired;
-
-  }
-
-  reset(newOrigin) {
-    const newOriginpolarCoords = cartesianToPolar(newOrigin.x, newOrigin.z);
-
-    this.bulletMesh.position.set(newOrigin.x, newOrigin.y, newOrigin.z);
-    this.polarCoords.radius = newOriginpolarCoords.radius;
-    this.polarCoords.angle = newOriginpolarCoords.angle;
-
-    this.collision = false;
-
-    this.scene.add(this.bulletMesh);
 
     return this;
   }

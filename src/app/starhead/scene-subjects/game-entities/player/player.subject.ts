@@ -1,10 +1,10 @@
 import {SceneSubject} from '../../scene.subject';
-import {GameState} from '../../../services/game-state-management.service';
 import {PlayerShooter} from './player-shooter.subject';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader';
 import {Camera, Euler, Group, PointLight, Scene, Vector3} from 'three';
 import {toRad} from '../../../starhead.utils';
 import {BulletRaycastWall} from './bullet-raycast-wall.subject';
+import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class Player extends SceneSubject {
 
@@ -12,7 +12,7 @@ export class Player extends SceneSubject {
   acceleration: number;
   shooting: boolean;
   recoveringFromDamage: boolean;
-  gameState: GameState;
+  gameState: GameStateModel;
   playerShooter: PlayerShooter;
   playerMesh: Group;
   public rotation: Euler;
@@ -24,7 +24,7 @@ export class Player extends SceneSubject {
 
   bulletAimWall: BulletRaycastWall;
 
-  constructor(scene: Scene, gameState: GameState, playerShooter: PlayerShooter, camera: Camera) {
+  constructor(scene: Scene, gameState: GameStateModel, playerShooter: PlayerShooter, camera: Camera) {
     super(scene);
 
     this.gameState = gameState;

@@ -1,14 +1,15 @@
 import * as THREE from 'three';
 import {SceneSubject} from '../../scene-subjects/scene.subject';
 import {PlayerAndCameraPositionManager} from '../../starhead.camera-player-position-manager.component';
-import {GameConstants, GameState} from '../../services/game-state-management.service';
+import {GameConstants} from '../../services/game-state-management.service';
 import {AcceleratorControl} from './accelerator.control';
+import {GameStateModel} from '../game-state/models/game-state.model';
 
 export class PolarControls extends SceneSubject {
 
   playerAndCameraPositionManager: PlayerAndCameraPositionManager;
   gameConstants: GameConstants;
-  gameState: GameState;
+  gameState: GameStateModel;
 
   W = 87;
   A = 65;
@@ -35,7 +36,7 @@ export class PolarControls extends SceneSubject {
     scene: THREE.Scene,
     playerAndCameraPositionManager: PlayerAndCameraPositionManager,
     gameConstants: GameConstants,
-    gameState: GameState
+    gameState: GameStateModel
   ) {
     super(scene);
 

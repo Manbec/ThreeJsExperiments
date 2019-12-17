@@ -7,9 +7,10 @@ export class WaltHead extends SceneSubject {
 
   bullets: Bullet[] = [];
   private scene: Scene;
-  private waltHead: any;
+  public waltHead: any;
   private waltGroup: Object3D;
   private waltAnimationMixer: AnimationMixer;
+  public boundingSphereRad = 200;
 
   constructor(scene: Scene) {
     super(scene);
@@ -46,6 +47,7 @@ export class WaltHead extends SceneSubject {
       object.scale.x = object.scale.y = object.scale.z = 0.07;
 
       this.waltHead = object;
+      this.waltHead.boundingSphereRad = this.boundingSphereRad;
       this.waltGroup.add(this.waltHead);
 
       this.scene.add(this.waltHead);

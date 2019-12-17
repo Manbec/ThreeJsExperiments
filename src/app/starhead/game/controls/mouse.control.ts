@@ -1,24 +1,23 @@
-import * as THREE from 'three';
 import {SceneSubject} from '../../scene-subjects/scene.subject';
-import {GameState} from '../../services/game-state-management.service';
 import {PlayerAndCameraPositionManager} from '../../starhead.camera-player-position-manager.component';
 import {Player} from '../../scene-subjects/game-entities/player/player.subject';
+import {GameStateModel} from '../game-state/models/game-state.model';
+import {Scene} from 'three';
 
 export class MouseControls extends SceneSubject {
 
+  gameStarted = false;
+
   shoot = false;
 
-  private gameState: GameState;
   private player: Player;
   private playerAndCameraPositionManager: PlayerAndCameraPositionManager;
 
-  constructor(scene: THREE.Scene,
-              gameState: GameState,
+  constructor(scene: Scene,
+              gameState: GameStateModel,
               playerAndCameraPositionManager: PlayerAndCameraPositionManager,
               player: Player) {
     super(scene);
-
-    this.gameState = gameState;
     this.playerAndCameraPositionManager = playerAndCameraPositionManager;
     this.player = player;
 
@@ -29,7 +28,6 @@ export class MouseControls extends SceneSubject {
   public update(elapsedTime: number): void {
 
   }
-
 
   onMouseDown(event) {
     switch (event.which) {

@@ -25,6 +25,7 @@ export class PlayerShooter extends ShooterComponentSubject {
   }
 
   public update(elapsedTime: number): void {
+    console.log(this.bullets.length);
     this.currentTime = elapsedTime;
     for (let i = 0; i < this.bullets.length; i++) {
       const expired = this.bullets[i].update(elapsedTime);
@@ -40,7 +41,7 @@ export class PlayerShooter extends ShooterComponentSubject {
       return;
     }
 
-    const bullet = this.bulletsCache.length !== 0 ? this.bulletsCache.pop().reset(originPosition) :
+    const bullet = this.bulletsCache.length !== 0 ? this.bulletsCache.pop().reset(originPosition, destinationPosition) :
       new Bullet(this.scene, originPosition, destinationPosition, this.gameConstants, this.bulletsColor);
     this.bullets.push(bullet);
 

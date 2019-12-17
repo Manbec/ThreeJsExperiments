@@ -1,15 +1,16 @@
 import * as THREE from 'three';
-import {GameConstants, GameState} from './services/game-state-management.service';
+import {GameConstants} from './services/game-state-management.service';
 import {Player} from './scene-subjects/game-entities/player/player.subject';
 import {Camera} from 'three';
-import {cos, polarToCartesian, sin, toDeg, toRad} from './starhead.utils';
+import {cos, sin, toRad} from './starhead.utils';
 import TWEEN from '@tweenjs/tween.js';
+import {GameStateModel} from './game/game-state/models/game-state.model';
 
 export class PlayerAndCameraPositionManager {
 
   camera: Camera;
   player: Player;
-  gameState: GameState;
+  gameState: GameStateModel;
 
   cameraHeightFromPlayer = { value: .6, offset: 0 };
   playerDistanceFromCamera = 320;
@@ -30,7 +31,7 @@ export class PlayerAndCameraPositionManager {
   constructor(camera: Camera,
               player: Player,
               private gameConstants: GameConstants,
-              gameState: GameState) {
+              gameState: GameStateModel) {
 
     this.camera = camera;
     this.player = player;
@@ -53,7 +54,6 @@ export class PlayerAndCameraPositionManager {
       .easing(TWEEN.Easing.Cubic.InOut)
       .start();
 
-    console.log(this.cameraLookAt);
     const tweenCameraHeight = new TWEEN.Tween(this.cameraHeightFromPlayer)
       .to({ offset: 0 }, 1500)
       .easing(TWEEN.Easing.Cubic.InOut)
