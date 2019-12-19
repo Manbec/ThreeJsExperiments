@@ -6,8 +6,6 @@
 }
 
 .gui-component {
-  height: 100vh;
-  width: 100vw;
   margin: 0;
   position: absolute;
   top: 0;
@@ -38,7 +36,121 @@
   bottom: 0;
   right: 0;
   z-index: 1;
-  background-color: rgba(175,233,204,0.41);
+  background-color: rgba(153, 122, 168, 0.7);
+  h1 {
+    font-family: 'Rock Salt', cursive;
+    text-align: center;
+  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-gui-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: calc(100% - 50px);
+  height: 50px;
+  .player-health-container {
+    width: 50%;
+    height: 80%;
+    border-radius: 80% 80% 0% 0%;
+    background-color: dimgrey;
+    margin: auto;
+    overflow: hidden;
+    .player-shield {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at top, cornflowerblue, floralwhite);
+      margin: auto;
+      .player-health {
+        width: 80%;
+        height: 100%;
+        background: radial-gradient(ellipse at top, #cb0000, indianred);
+        margin: auto;
+      }
+    }
+  }
+}
+
+.enemy-health-gui-container {
+  position: fixed;
+  text-align: center;
+  left: 0;
+  right: 0;
+  top: 10px;
+  height: 30px;
+  p {
+    margin: auto;
+    width: 30%;
+    background: radial-gradient(ellipse at top, #812f8b, transparent);
+    font-weight: bolder;
+    color: #da96ff;
+  }
+  .enemy-health-container {
+    overflow: hidden;
+    width: 70%;
+    height: 80%;
+    border-radius: 0% 0% 90% 90%;
+    background-color: dimgrey;
+    margin: auto;
+    .enemy-health {
+      width: 80%;
+      height: 100%;
+      background: radial-gradient(ellipse at top, #812f8b, indianred);
+      margin: auto;
+    }
+  }
+}
+
+.ammo-gui-container {
+  position: fixed;
+  bottom: 0;
+  left: calc(100% - 210px);;
+  right: 0;
+  top: calc(100% - 210px);
+  height: 200px;
+  width: 200px;
+  .main-gun-heat-container {
+    width: 50px;
+    height: 100%;
+    border-radius: 30%;
+    background-color: dimgrey;
+    margin: 0;
+    position: absolute;
+    right: 20px;
+    overflow: hidden;
+    .main-gun-heat {
+      width: 100%;
+      height: 20%;
+      background: radial-gradient(ellipse at bottom, #eb0000, #ff8d02);
+    }
+  }
+  .special-ammo-container {
+    width: 50px;
+    height: 100%;
+    position: absolute;
+    right: 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .special-ammo {
+      overflow: hidden;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-top: auto;
+      background: radial-gradient(ellipse at bottom, #65ee48, #cd9f69);
+      .special-ammo-content {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 }
 
 .aim-gui-container {

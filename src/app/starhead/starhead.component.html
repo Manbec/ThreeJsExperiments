@@ -3,15 +3,45 @@
 </div>
 
 <div class="game-gui" id="gameGUI">
-  <div class="gui-component start-screen" id="startScreen">
-</div>
-  <div class="gui-component enemy-health-gui-container" id="enemyHealthContainer">
-</div>
-  <div class="gui-component health-gui-container" id="healthContainer">
+  <div class="gui-component start-screen" id="startScreen"
+       *ngIf="!gameStateManagementService.gameState.gameStarted">
+    <h1>Attack of <br>the Walt Head</h1>
   </div>
-  <div class="gui-component ammo-gui-container" id="ammoContainer">
-  </div>
-  <div class="gui-component aim-gui-container" id="aimContainer">
+  <ng-container *ngIf="gameStateManagementService.gameState.gameStarted">
+    <div class="gui-component enemy-health-gui-container" id="enemyHealthContainer">
+      <div class="enemy-health-container">
+        <div class="enemy-health"></div>
+      </div>
+      <p>Walt Head</p>
+    </div>
+    <div class="gui-component health-gui-container" id="healthContainer">
+      <div class="player-health-container">
+        <div class="player-shield">
+          <div class="player-health"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gui-component ammo-gui-container" id="ammoContainer">
+      <div class="main-gun-heat-container">
+        <div class="main-gun-heat">
+        </div>
+      </div>
+      <div class="special-ammo-container">
+        <div class="special-ammo">
+          <div class="special-ammo-content">
+          </div>
+        </div>
+        <div class="special-ammo">
+          <div class="special-ammo-content">
+          </div>
+        </div>
+        <div class="special-ammo">
+          <div class="special-ammo-content">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gui-component aim-gui-container" id="aimContainer">
     <div class="outer-aim" id="aim" #aim>
       <div class="inner-aim">
         <div class="vertical-cross">
@@ -23,4 +53,5 @@
       </div>
     </div>
   </div>
+  </ng-container>
 </div>
