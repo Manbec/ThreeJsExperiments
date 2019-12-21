@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {ShooterComponentSubject} from '../shooter.subject';
 
-export class WaltHandShooter extends ShooterComponentSubject {
+export class GhostHandShooter extends ShooterComponentSubject {
 
   constructor(scene: THREE.Scene) {
     super(scene);

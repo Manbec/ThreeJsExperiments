@@ -5,14 +5,14 @@
 <div class="game-gui" id="gameGUI">
   <div class="gui-component start-screen" id="startScreen"
        *ngIf="!gameStateManagementService.gameState.gameStarted">
-    <h1>Attack of <br>the Walt Head</h1>
+    <h1>Attack of <br>the Ghost Head</h1>
   </div>
   <ng-container *ngIf="gameStateManagementService.gameState.gameStarted">
     <div class="gui-component enemy-health-gui-container" id="enemyHealthContainer">
       <div class="enemy-health-container">
         <div class="enemy-health"></div>
       </div>
-      <p>Walt Head</p>
+      <p>Ghost Head</p>
     </div>
     <div class="gui-component health-gui-container" id="healthContainer">
       <div class="player-health-container">

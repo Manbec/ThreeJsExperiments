@@ -148,13 +148,13 @@ export class Threebeginners1Component implements OnInit, AfterViewInit {
     this.diamondsGroup = new THREE.Object3D();
 
     // create array with any links
-    let arr = ['https://en.wikipedia.org/wiki/Walter_W._Head'];
+    let arr = ['https://en.wikipedia.org/wiki/Ghoster_W._Head'];
 
     // setting up loader for a model
     const loader = new GLTFLoader();
 
     // load model and clone it
-    loader.load('assets/3Dmodels/walthead.gltf', (geometry) => {
+    loader.load('assets/3Dmodels/ghosthead.gltf', (geometry) => {
       for (let i = 0; i < 60; i++) {
         const material = new THREE.MeshPhongMaterial({
           color: Math.random() * 0xff00000 - 0xff00000,

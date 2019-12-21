@@ -4,18 +4,18 @@ import {Camera, Scene, Vector3} from 'three';
 import {Player} from './game-entities/player/player.subject';
 import {PlayerShooter} from './game-entities/player/player-shooter.subject';
 import {GameConstants} from '../services/game-state-management.service';
-import {WaltHead} from './game-entities/walt/walt-head.subject';
-import {WaltLeftHand} from './game-entities/walt/walt-left-hand.subject';
-import {WaltRightHand} from './game-entities/walt/walt-right-hand.subject';
+import {GhostHead} from './game-entities/ghost/ghost-head.subject';
+import {GhostLeftHand} from './game-entities/ghost/ghost-left-hand.subject';
+import {GhostRightHand} from './game-entities/ghost/ghost-right-hand.subject';
 import {GameStateModel} from '../game/game-state/models/game-state.model';
 
 export class GameEntitiesManager extends SceneSubject {
 
   playerShooter: PlayerShooter;
   player: Player;
-  waltHead: WaltHead;
-  waltLeftHand: WaltLeftHand;
-  waltRightHand: WaltRightHand;
+  ghostHead: GhostHead;
+  ghostLeftHand: GhostLeftHand;
+  ghostRightHand: GhostRightHand;
   gameState: GameStateModel;
 
   constructor(scene: Scene,
@@ -27,9 +27,9 @@ export class GameEntitiesManager extends SceneSubject {
 
     this.playerShooter = new PlayerShooter(scene, gameConstants);
     this.player = new Player(scene, gameState, this.playerShooter, camera);
-    this.waltHead = new WaltHead(scene);
-    this.waltLeftHand = new WaltLeftHand(scene);
-    this.waltRightHand = new WaltRightHand(scene);
+    this.ghostHead = new GhostHead(scene);
+    this.ghostLeftHand = new GhostLeftHand(scene);
+    this.ghostRightHand = new GhostRightHand(scene);
     this.gameState = gameState;
 
   }
@@ -37,11 +37,11 @@ export class GameEntitiesManager extends SceneSubject {
   public update(elapsedTime: number): void {
 
     this.player.update(elapsedTime);
-    // this.walt.update(elapsedTime);
+    // this.ghost.update(elapsedTime);
     this.playerShooter.update(elapsedTime);
-    this.waltHead.update(elapsedTime);
-    this.waltLeftHand.update(elapsedTime);
-    this.waltRightHand.update(elapsedTime);
+    this.ghostHead.update(elapsedTime);
+    this.ghostLeftHand.update(elapsedTime);
+    this.ghostRightHand.update(elapsedTime);
 
     if (!this.gameState.gameStarted) {
       return;
@@ -50,15 +50,15 @@ export class GameEntitiesManager extends SceneSubject {
     const playerBullets = this.playerShooter.bullets;
 
     const enemyBullets = [
-      ...this.waltHead.getBullets(),
-      ...this.waltLeftHand.getBullets(),
-      ...this.waltRightHand.getBullets()
+      ...this.ghostHead.getBullets(),
+      ...this.ghostLeftHand.getBullets(),
+      ...this.ghostRightHand.getBullets()
     ];
 
     this.checkCollisionWithTargets(playerBullets, [
-      this.waltHead.waltHead,
-      this.waltRightHand.waltRightHand,
-      this.waltLeftHand.waltLeftHand
+      this.ghostHead.ghostHead,
+      this.ghostRightHand.ghostRightHand,
+      this.ghostLeftHand.ghostLeftHand
     ]);
     this.checkCollisionWithPlayer(enemyBullets, this.player);
 
@@ -79,8 +79,8 @@ export class GameEntitiesManager extends SceneSubject {
         const distance = bullet.position.distanceTo( target.position );
         // console.log('distant bullet to target ', j, ' ', target, ' = ', distance, '. For radius ', target, target.boundingSphereRad);
         if (distance < target.boundingSphereRad) {
-          // console.log("HIT!!!!!", j);
-          bullet.collision = true;
+          console.log("HIT!!!!!", j);
+          //bullet.collision = true;
           target.collision = true;
 
           // eventBus.post(increaseScore);

@@ -56,20 +56,20 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
   public helperDistance = 10;
 
   // diamonds vars
-  public waltGroup: any;
+  public ghostGroup: any;
   public handGroup: any;
-  public waltHead: any;
-  public waltRightHand: any;
-  public waltLeftHand: any;
+  public ghostHead: any;
+  public ghostRightHand: any;
+  public ghostLeftHand: any;
 
   public lamp: any;
 
   // dots vars
   public dots: any;
   private clock = new THREE.Clock();
-  private waltAnimationMixer: AnimationMixer;
-  private waltLeftHandAnimationMixer: AnimationMixer;
-  private waltRightHandAnimationMixer: AnimationMixer;
+  private ghostAnimationMixer: AnimationMixer;
+  private ghostLeftHandAnimationMixer: AnimationMixer;
+  private ghostRightHandAnimationMixer: AnimationMixer;
   private lampAnimationMixer: AnimationMixer;
 
   constructor() { }
@@ -123,7 +123,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
     // OBJECTS
     // here we add objects by functions which we will write below
-    this.createWalt();
+    this.createGhost();
     this.createLamp();
     this.createSpace();
 
@@ -147,15 +147,15 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
   }
 
-  createWalt() {
+  createGhost() {
     // create a group container
-    this.waltGroup = new THREE.Object3D();
+    this.ghostGroup = new THREE.Object3D();
     this.handGroup = new THREE.Object3D();
 
     // load model and clone it
     const loader = new FBXLoader();
 
-    loader.load('assets/3Dmodels/walthead.fbx', (object) => {
+    loader.load('assets/3Dmodels/ghosthead.fbx', (object) => {
 
       object.position.x = 1000;
       object.position.y = 1000;
@@ -163,17 +163,17 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       object.rotation.y = Math.PI * 1.5;
       object.scale.x = object.scale.y = object.scale.z = 0.1;
 
-      this.waltHead = object;
-      this.waltGroup.add(this.waltHead);
+      this.ghostHead = object;
+      this.ghostGroup.add(this.ghostHead);
 
-      this.scene.add(this.waltHead);
+      this.scene.add(this.ghostHead);
 
-      this.waltAnimationMixer = new THREE.AnimationMixer( this.waltHead );
-      let clips = this.waltHead.animations;
-      console.log("Walt clips", clips);
+      this.ghostAnimationMixer = new THREE.AnimationMixer( this.ghostHead );
+      let clips = this.ghostHead.animations;
+      console.log("Ghost clips", clips);
       let clip = THREE.AnimationClip.findByName( clips, 'Armature|Laugh' );
-      console.log('walt clip', clip);
-      let action = this.waltAnimationMixer.clipAction( clip );
+      console.log('ghost clip', clip);
+      let action = this.ghostAnimationMixer.clipAction( clip );
       setTimeout(() => {
         action.play();
       }, 1000);
@@ -183,7 +183,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
     });
 
-    loader.load('assets/3Dmodels/walthand.fbx', (object) => {
+    loader.load('assets/3Dmodels/ghosthand.fbx', (object) => {
 
       object.position.x = 1000;
       object.position.y = 1000;
@@ -192,18 +192,18 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       object.scale.x = object.scale.y = object.scale.z = 5;
       object.scale.x = -5;
 
-      this.waltLeftHand = object;
-      this.waltGroup.add(this.waltLeftHand);
+      this.ghostLeftHand = object;
+      this.ghostGroup.add(this.ghostLeftHand);
 
-      this.scene.add(this.waltLeftHand);
+      this.scene.add(this.ghostLeftHand);
 
 
-      this.waltLeftHandAnimationMixer = new THREE.AnimationMixer( this.waltLeftHand );
-      let clips = this.waltLeftHand.animations;
+      this.ghostLeftHandAnimationMixer = new THREE.AnimationMixer( this.ghostLeftHand );
+      let clips = this.ghostLeftHand.animations;
       console.log("L Hand clips", clips);
       let clip = THREE.AnimationClip.findByName( clips, 'Armature|idle' );
       console.log('L hand clip', clip);
-      let action = this.waltLeftHandAnimationMixer.clipAction( clip );
+      let action = this.ghostLeftHandAnimationMixer.clipAction( clip );
       setTimeout(() => {
         action.play();
       }, 1000);
@@ -213,7 +213,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
     });
 
-    loader.load('assets/3Dmodels/walthand.fbx', (object) => {
+    loader.load('assets/3Dmodels/ghosthand.fbx', (object) => {
 
       object.position.x = 1000;
       object.position.y = 1000;
@@ -221,18 +221,18 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       object.rotation.y = Math.PI * 1.5;
       object.scale.x = object.scale.y = object.scale.z = 5;
 
-      this.waltRightHand = object;
-      this.waltGroup.add(this.waltRightHand);
+      this.ghostRightHand = object;
+      this.ghostGroup.add(this.ghostRightHand);
 
-      this.scene.add(this.waltRightHand);
+      this.scene.add(this.ghostRightHand);
 
 
-      this.waltRightHandAnimationMixer = new THREE.AnimationMixer( this.waltRightHand );
-      let clips = this.waltRightHand.animations;
+      this.ghostRightHandAnimationMixer = new THREE.AnimationMixer( this.ghostRightHand );
+      let clips = this.ghostRightHand.animations;
       console.log("L Hand clips", clips);
       let clip = THREE.AnimationClip.findByName( clips, 'Armature|idle' );
       console.log('L hand clip', clip);
-      let action = this.waltRightHandAnimationMixer.clipAction( clip );
+      let action = this.ghostRightHandAnimationMixer.clipAction( clip );
       setTimeout(() => {
         action.play();
       }, 1000);
@@ -284,7 +284,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     });
 
     const handLoader = new GLTFLoader();
-    // load walthand and clone it
+    // load ghosthand and clone it
     handLoader.load('assets/3Dmodels/rigged_lowpoly_hand/scene.gltf', (geometry) => {
       const material = new MeshToonMaterial({
         color: Math.random() * 0xff00000 - 0xff00000,
@@ -351,7 +351,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       handou.userData = {
         name: 'Pawge'
       };
-      this.waltLeftHand = handou;
+      this.ghostLeftHand = handou;
       this.handGroup.add(handou);
 
       this.scene.add(handou);
@@ -364,14 +364,14 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       this.scene.add(geometry.scene.children[0]);
       this.renderer.render(this.scene, this.camera);
 
-      const waltHand = geometry.scene.children[0].children[0].children[0].children[0];
-      const waltHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
-      // console.log(waltHandLeft.children.splice(2, 1));
-      console.log('walhanlef', waltHandLeft);
+      const ghostHand = geometry.scene.children[0].children[0].children[0].children[0];
+      const ghostHandLeft = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      // console.log(ghostHandLeft.children.splice(2, 1));
+      console.log('walhanlef', ghostHandLeft);
 
-      const mesh = waltHand;
-      const skeleton = waltHand.children[0].children;
-      // mesh.add(waltHand.children[0].children[0]);
+      const mesh = ghostHand;
+      const skeleton = ghostHand.children[0].children;
+      // mesh.add(ghostHand.children[0].children[0]);
       // mesh.bind(skeleton);
 
       console.log('mosh', mesh);
@@ -383,32 +383,32 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
       mesh.scale.x = mesh.scale.y = mesh.scale.z = (Math.random() * 1 + 10) * 0.6;
 
       // and randomly push it into userData object
-      waltHandLeft.userData = {
+      ghostHandLeft.userData = {
         name: 'Pawge'
       };*/
-      this.waltLeftHand = mesh;
+      this.ghostLeftHand = mesh;
 
-      this.waltGroup.add(mesh);
+      this.ghostGroup.add(mesh);
 
-      const waltHandRight = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
-      console.log('walhanlef', waltHandLeft);
-      waltHandRight.children.splice(2, 1);
-      waltHandRight.position.x = this.mainPlaneWidth;
-      waltHandRight.position.y = 1200;
-      waltHandRight.position.z = -500;
-      waltHandRight.rotation.y = Math.PI * 1.5;
-      waltHandRight.scale.x = waltHandRight.scale.y = waltHandRight.scale.z = (Math.random() * 1 + 10) * 0.6;
+      const ghostHandRight = geometry.scene.clone(true).children[0].children[0].children[0].children[0]; // new THREE.Mesh(geometry.asset, material);
+      console.log('walhanlef', ghostHandLeft);
+      ghostHandRight.children.splice(2, 1);
+      ghostHandRight.position.x = this.mainPlaneWidth;
+      ghostHandRight.position.y = 1200;
+      ghostHandRight.position.z = -500;
+      ghostHandRight.rotation.y = Math.PI * 1.5;
+      ghostHandRight.scale.x = ghostHandRight.scale.y = ghostHandRight.scale.z = (Math.random() * 1 + 10) * 0.6;
 
       // and randomly push it into userData object
-      waltHandRight.userData = {
+      ghostHandRight.userData = {
         name: 'Pawge'
       };
-      this.waltRightHand = waltHandRight;
+      this.ghostRightHand = ghostHandRight;
 
-      // this.waltGroup.add(waltHandRight);
+      // this.ghostGroup.add(ghostHandRight);
 
-      this.waltGroup.position.x = this.mainPlaneWidth / 2;
-      this.scene.add(this.waltGroup);
+      this.ghostGroup.position.x = this.mainPlaneWidth / 2;
+      this.scene.add(this.ghostGroup);
 
 
       // we will delete this line later
@@ -443,7 +443,7 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    const intersects = this.raycaster.intersectObjects(this.waltGroup.children);
+    const intersects = this.raycaster.intersectObjects(this.ghostGroup.children);
     if (intersects.length > 0) {
     }
 
@@ -456,14 +456,14 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
     if (this.lampAnimationMixer) {
       this.lampAnimationMixer.update(delta);
     }
-    if (this.waltAnimationMixer) {
-      this.waltAnimationMixer.update(delta);
+    if (this.ghostAnimationMixer) {
+      this.ghostAnimationMixer.update(delta);
     }
-    if (this.waltLeftHandAnimationMixer) {
-      this.waltLeftHandAnimationMixer.update(delta);
+    if (this.ghostLeftHandAnimationMixer) {
+      this.ghostLeftHandAnimationMixer.update(delta);
     }
-    if (this.waltRightHandAnimationMixer) {
-      this.waltRightHandAnimationMixer.update(delta);
+    if (this.ghostRightHandAnimationMixer) {
+      this.ghostRightHandAnimationMixer.update(delta);
     }
 
     this.render();
@@ -476,15 +476,15 @@ export class Threebeginners2Component implements OnInit, AfterViewInit {
 
   // game logic
   update() {
-    if (this.waltHead) {
-      // this.waltHead.rotation.x += 0.01;
-      // this.waltHead.rotation.y += 0.005;
+    if (this.ghostHead) {
+      // this.ghostHead.rotation.x += 0.01;
+      // this.ghostHead.rotation.y += 0.005;
     }
-    /*if (this.waltRightHand && this.waltLeftHand) {
-      this.waltRightHand.rotation.x += 0.01;
-      this.waltRightHand.rotation.y += 0.005;
-      this.waltLeftHand.rotation.x += 0.01;
-      this.waltLeftHand.rotation.y += 0.005;
+    /*if (this.ghostRightHand && this.ghostLeftHand) {
+      this.ghostRightHand.rotation.x += 0.01;
+      this.ghostRightHand.rotation.y += 0.005;
+      this.ghostLeftHand.rotation.x += 0.01;
+      this.ghostLeftHand.rotation.y += 0.005;
     }*/
   }
 

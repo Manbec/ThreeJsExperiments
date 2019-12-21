@@ -38,6 +38,7 @@ export class Player extends SceneSubject {
 
     this.position = this.group.position;
     this.rotation = this.group.rotation;
+    this.position.z = -2;
 
     this.bulletAimWall.setPosition(this.position.x, this.position.y + 1100, this.position.z);
 
