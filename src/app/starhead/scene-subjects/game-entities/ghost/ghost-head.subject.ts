@@ -1,8 +1,10 @@
 import {SceneSubject} from '../../scene.subject';
 import {Bullet} from '../player/bullet.subject';
 import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
-import {AnimationClip, AnimationMixer, Material, Object3D, Scene} from 'three';
+import {AnimationAction, AnimationClip, AnimationMixer, Material, Object3D, Scene} from 'three';
 import TWEEN from '@tweenjs/tween.js';
+import {GameStateManagementService} from '../../../services/game-state-management.service';
+import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class GhostHead extends SceneSubject {
 
@@ -21,7 +23,7 @@ export class GhostHead extends SceneSubject {
     },
     hit: {
       title: 'Armature|Ouch',
-      speed: 0.05
+      speed: 0.02
     },
     idle: {
       title: 'Armature|Idle',
@@ -33,10 +35,14 @@ export class GhostHead extends SceneSubject {
     }
   };
   private headMeshMaterial: Material;
+  private clips: AnimationClip[];
+  private activeAnimationAction: AnimationAction;
+  private gameState: GameStateModel;
 
-  constructor(scene: Scene) {
+  constructor(scene: Scene, gameState: GameStateModel) {
     super(scene);
     this.scene = scene;
+    this.gameState = gameState;
     this.createGhostHead();
   }
 
@@ -80,15 +86,15 @@ export class GhostHead extends SceneSubject {
       this.headMeshMaterial.opacity = 0.0;
 
       this.ghostAnimationMixer = new AnimationMixer( this.ghostHead );
-      const clips = this.ghostHead.animations;
+      this.clips = this.ghostHead.animations;
       console.log('Armature|Laugh', this.ghostHeadAnimations.laugh);
-      console.log('Ghost clips', clips);
-      const clip = AnimationClip.findByName( clips, this.ghostHeadAnimations.idle.title);
+      console.log('Ghost clips', this.clips);
+      const clip = AnimationClip.findByName( this.clips, this.ghostHeadAnimations.idle.title);
       this.activeAnimationSpeed = this.ghostHeadAnimations.idle.speed;
       console.log('ghost clip', clip);
-      const action = this.ghostAnimationMixer.clipAction( clip );
+      this.activeAnimationAction = this.ghostAnimationMixer.clipAction( clip );
       setTimeout(() => {
-        action.play();
+        this.activeAnimationAction.play();
         this.appear();
         this.floaty();
       }, 1000);
@@ -127,5 +133,22 @@ export class GhostHead extends SceneSubject {
       .start();
   }
 
+  receiveHit() {
+    this.gameState.ghostHealth -= 4;
+    console.log('Ghost head receive hit');
+    console.log("PLAY HIT!!!");
+    const clip = AnimationClip.findByName(this.clips, this.ghostHeadAnimations.hit.title);
+    this.activeAnimationAction = this.ghostAnimationMixer.clipAction( clip );
+    this.activeAnimationSpeed = this.ghostHeadAnimations.hit.speed;
+    this.activeAnimationAction.play();
+    setTimeout(() => {
+      this.activeAnimationAction.stop();
+      console.log("PLAY IDLE!!!");
+      const clipIdle = AnimationClip.findByName(this.clips, this.ghostHeadAnimations.idle.title);
+      this.activeAnimationAction = this.ghostAnimationMixer.clipAction( clipIdle );
+      this.activeAnimationSpeed = this.ghostHeadAnimations.idle.speed;
+      this.activeAnimationAction.play();
+    }, 980);
+  }
 
 }

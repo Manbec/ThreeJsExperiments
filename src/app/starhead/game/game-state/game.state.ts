@@ -2,7 +2,7 @@
  *  This state is responsible for storing the overall game state
  */
 
-import {defaultInitalHealth, GameStateModel} from './models/game-state.model';
+import {defaultGhostInitalHealth, defaultInitalHealth, GameStateModel} from './models/game-state.model';
 import {Vector3} from 'three';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {GameStateManagementService} from '../../services/game-state-management.service';
@@ -13,7 +13,8 @@ const defaultGameState = (): GameStateModel => {
   return {
     gameStarted: false,
     playerPosition: new Vector3(0, 0, 0),
-    health: defaultInitalHealth,
+    playerHealth: defaultInitalHealth,
+    ghostHealth: defaultGhostInitalHealth,
     playerHasMoved: false,
     enableUserInput: true
   };

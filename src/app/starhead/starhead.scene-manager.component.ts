@@ -92,7 +92,7 @@ export class SceneManager {
     const aspectRatio = width / height;
     const fieldOfView = 60;
     const nearPlane = 1;
-    const farPlane = 1200;
+    const farPlane = 1400;
     const camera = new PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
 
     return camera;

@@ -13,7 +13,7 @@ export class Nebula extends SceneSubject {
     const loader = new TextureLoader();
     loader.load('assets/textures/smoke.png', (texture) => {
       // texture is loaded
-      const cloudGeo = new PlaneBufferGeometry(500, 500);
+      const cloudGeo = new PlaneBufferGeometry(370, 400);
       const cloudMaterial = new MeshLambertMaterial({
         map: texture,
         transparent: true
@@ -24,13 +24,13 @@ export class Nebula extends SceneSubject {
         const cloud = new Mesh(cloudGeo, cloudMaterial);
         cloud.position.set(
           Math.random() * 2200 - 1200,
-          Math.random() * 100 + 900,
+          Math.random() * 200 + 1300,
           Math.random() * 1000 - 500
         );
         cloud.rotation.x = degToRad(90);
         cloud.rotation.y = 0;
         cloud.rotation.z = Math.random() * 2 * Math.PI;
-        (cloud.material as Material).opacity = 0.55;
+        (cloud.material as Material).opacity = 0.3;
         this.cloudParticles.push(cloud);
         scene.add(cloud);
 
@@ -54,6 +54,11 @@ export class Nebula extends SceneSubject {
   public update(elapsedTime: number): void {
       this.cloudParticles.forEach(p => {
         p.rotation.z -= 0.001;
+        p.position.y -= Math.random() * 10 + 8;
+        console.log(p.position.y);
+        if ( p.position.y < 200) {
+          p.position.y = Math.random() * 200 + 1300;
+        }
       });
   }
 

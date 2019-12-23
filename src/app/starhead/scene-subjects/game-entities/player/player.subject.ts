@@ -102,6 +102,10 @@ export class Player extends SceneSubject {
   }
 
   shoot(destinationPosition: Vector3) {
+
+    if (!this.gameState.gameStarted) {
+      return;
+    }
     const originPosition = new Vector3(this.playerMesh.position.x, this.playerMesh.position.y + 5.5, this.playerMesh.position.z - 1);
     this.playerShooter.shoot(originPosition, destinationPosition);
   }

@@ -25,7 +25,7 @@ export class PlayerShooter extends ShooterComponentSubject {
   }
 
   public update(elapsedTime: number): void {
-    console.log(this.bullets.length);
+    // console.log(this.bullets.length);
     this.currentTime = elapsedTime;
     for (let i = 0; i < this.bullets.length; i++) {
       const expired = this.bullets[i].update(elapsedTime);

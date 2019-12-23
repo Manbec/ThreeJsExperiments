@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Vector3} from 'three';
-import {GameStateModel} from '../game/game-state/models/game-state.model';
+import {defaultGhostInitalHealth, defaultInitalHealth, GameStateModel} from '../game/game-state/models/game-state.model';
 
 
 export interface GameConstants {
@@ -17,7 +17,8 @@ export interface GameConstants {
 })
 export class GameStateManagementService {
 
-  private initialHealth = 100;
+  public initialHealth = defaultInitalHealth;
+  public ghostInitialHealth = defaultGhostInitalHealth;
 
   gameConstants: GameConstants = {
     speedStep: 0,
@@ -35,7 +36,8 @@ export class GameStateManagementService {
     this.gameState = {
       gameStarted: false,
       playerPosition: new Vector3(0, 0, 0),
-      health: this.initialHealth,
+      playerHealth: this.initialHealth,
+      ghostHealth: this.ghostInitialHealth,
       playerHasMoved: false,
       enableUserInput: true
     };

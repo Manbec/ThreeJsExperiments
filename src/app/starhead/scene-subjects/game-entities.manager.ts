@@ -27,7 +27,7 @@ export class GameEntitiesManager extends SceneSubject {
 
     this.playerShooter = new PlayerShooter(scene, gameConstants);
     this.player = new Player(scene, gameState, this.playerShooter, camera);
-    this.ghostHead = new GhostHead(scene);
+    this.ghostHead = new GhostHead(scene, gameState);
     this.ghostLeftHand = new GhostLeftHand(scene);
     this.ghostRightHand = new GhostRightHand(scene);
     this.gameState = gameState;
@@ -56,9 +56,18 @@ export class GameEntitiesManager extends SceneSubject {
     ];
 
     this.checkCollisionWithTargets(playerBullets, [
-      this.ghostHead.ghostHead,
-      this.ghostRightHand.ghostRightHand,
-      this.ghostLeftHand.ghostLeftHand
+      {
+        mesh: this.ghostHead.ghostHead,
+        subject: this.ghostHead
+      },
+      {
+        mesh: this.ghostRightHand.ghostRightHand,
+        subject: this.ghostRightHand
+      },
+      {
+        mesh: this.ghostLeftHand.ghostLeftHand,
+        subject: this.ghostLeftHand
+      }
     ]);
     this.checkCollisionWithPlayer(enemyBullets, this.player);
 
@@ -76,12 +85,13 @@ export class GameEntitiesManager extends SceneSubject {
           continue;
         }
 
-        const distance = bullet.position.distanceTo( target.position );
+        const distance = bullet.position.distanceTo( target.mesh.position );
         // console.log('distant bullet to target ', j, ' ', target, ' = ', distance, '. For radius ', target, target.boundingSphereRad);
-        if (distance < target.boundingSphereRad) {
-          console.log("HIT!!!!!", j);
-          //bullet.collision = true;
-          target.collision = true;
+        if (distance < target.mesh.boundingSphereRad) {
+          console.log('HIT!!!!!', j);
+          // bullet.collision = true;
+          console.log(target);
+          target.subject.receiveHit();
 
           // eventBus.post(increaseScore);
         }

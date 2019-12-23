@@ -2,12 +2,13 @@ import * as THREE from 'three';
 import {SceneSubject} from '../../scene.subject';
 import {Bullet} from '../player/bullet.subject';
 import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
-import {Material, Scene} from 'three';
+import {AnimationAction, Material, Scene} from 'three';
 import {Object3D} from 'three';
 import {AnimationMixer} from 'three';
 import {_Math} from 'three/src/math/Math';
 import degToRad = _Math.degToRad;
 import TWEEN from '@tweenjs/tween.js';
+import {AnimationClip} from 'three';
 
 export class GhostLeftHand extends SceneSubject {
 
@@ -26,7 +27,7 @@ export class GhostLeftHand extends SceneSubject {
     },
     idle2: {
       title: 'Armature|idle2',
-      speed: 0.05
+      speed: 0.02
     },
     newHand: {
       title: 'Armature|New',
@@ -38,6 +39,9 @@ export class GhostLeftHand extends SceneSubject {
     }
   };
   private handMeshMaterial: Material;
+  private stretchHandInterval: NodeJS.Timeout;
+  private clips: AnimationClip[];
+  private activeAnimationAction: AnimationAction;
 
   constructor(scene: THREE.Scene) {
     super(scene);
@@ -84,14 +88,14 @@ export class GhostLeftHand extends SceneSubject {
 
 
       this.ghostLeftHandAnimationMixer = new THREE.AnimationMixer( this.ghostLeftHand );
-      const clips = this.ghostLeftHand.animations;
-      console.log('L Hand clips', clips);
-      const clip = THREE.AnimationClip.findByName( clips, this.ghostHandAnimations.idle.title );
+      this.clips = this.ghostLeftHand.animations;
+      console.log('L Hand clips', this.clips);
+      const clip = THREE.AnimationClip.findByName( this.clips, this.ghostHandAnimations.idle.title );
       this.activeAnimationSpeed = this.ghostHandAnimations.idle.speed;
       console.log('L hand clip', clip);
-      const action = this.ghostLeftHandAnimationMixer.clipAction( clip );
+      this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( clip );
       setTimeout(() => {
-        action.play();
+        this.activeAnimationAction.play();
         this.appear();
         this.floaty();
       }, 1000);
@@ -129,6 +133,27 @@ export class GhostLeftHand extends SceneSubject {
       .delay( 300 )
       .easing(TWEEN.Easing.Cubic.InOut)
       .start();
+    this.stretchHandInterval = setInterval(() => {
+    this.stretchHand();
+    }, 26000);
+  }
+
+  stretchHand() {
+    const clip = AnimationClip.findByName(this.clips, this.ghostHandAnimations.idle2.title);
+    this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( clip );
+    this.activeAnimationSpeed = this.ghostHandAnimations.idle2.speed;
+    this.activeAnimationAction.play();
+    setTimeout(() => {
+      this.activeAnimationAction.stop();
+      const clipIdle = AnimationClip.findByName(this.clips, this.ghostHandAnimations.idle.title);
+      this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( clipIdle );
+      this.activeAnimationSpeed = this.ghostHandAnimations.idle.speed;
+      this.activeAnimationAction.play();
+    }, 2600);
+  }
+
+  receiveHit() {
+
   }
 
 }

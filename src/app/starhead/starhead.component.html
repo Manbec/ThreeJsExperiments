@@ -10,11 +10,12 @@
   <ng-container *ngIf="gameStateManagementService.gameState.gameStarted">
     <div class="gui-component enemy-health-gui-container" id="enemyHealthContainer">
       <div class="enemy-health-container">
-        <div class="enemy-health"></div>
+        <div class="enemy-health"
+             [style.width]="(gameStateManagementService.gameState.ghostHealth / gameStateManagementService.ghostInitialHealth) * 100 + '%'"></div>
       </div>
       <p>Ghost Head</p>
     </div>
-    <div class="gui-component health-gui-container" id="healthContainer">
+    <div class="gui-component health-gui-container" id="healthC ontainer">
       <div class="player-health-container">
         <div class="player-shield">
           <div class="player-health"></div>
