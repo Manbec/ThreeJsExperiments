@@ -24,7 +24,8 @@ export class Player extends SceneSubject {
 
   bulletAimWall: BulletRaycastWall;
 
-  constructor(scene: Scene, gameState: GameStateModel, playerShooter: PlayerShooter, camera: Camera) {
+  constructor(scene: Scene, gameState: GameStateModel,
+              playerShooter: PlayerShooter, camera: Camera) {
     super(scene);
 
     this.gameState = gameState;
@@ -106,7 +107,7 @@ export class Player extends SceneSubject {
     if (!this.gameState.gameStarted) {
       return;
     }
-    const originPosition = new Vector3(this.playerMesh.position.x, this.playerMesh.position.y + 5.5, this.playerMesh.position.z - 1);
+    const originPosition = new Vector3(this.playerMesh.position.x, this.playerMesh.position.y + 5.5, this.playerMesh.position.z - 2);
     this.playerShooter.shoot(originPosition, destinationPosition);
   }
 

@@ -55,7 +55,6 @@ export class Nebula extends SceneSubject {
       this.cloudParticles.forEach(p => {
         p.rotation.z -= 0.001;
         p.position.y -= Math.random() * 10 + 8;
-        console.log(p.position.y);
         if ( p.position.y < 200) {
           p.position.y = Math.random() * 200 + 1300;
         }

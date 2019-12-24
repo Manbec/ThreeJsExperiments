@@ -6,6 +6,7 @@ import {GameState} from './game/game-state/game.state';
 import {Select, Store} from '@ngxs/store';
 import {combineLatest, Observable, Subscription} from 'rxjs';
 import {SetGameStarted} from './game/game-state/actions/game.actions';
+import {Vector3} from 'three';
 
 @Component({
   selector: 'threejslab-star-head',
@@ -16,6 +17,9 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Select(GameState.isGameStarted)
   public gameStateStarted$: Observable<boolean>;
+
+  @Select(GameState.playerPosition)
+  public playerPosition$: Observable<Vector3>;
 
   @ViewChild('gameCanvasEl', { static: false }) gameCanvasEl: ElementRef;
   @ViewChild('aim', { static: false }) aim: ElementRef;
@@ -43,7 +47,7 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.body.style.overflow = 'hidden';
 
-    this.sceneManager = new SceneManager(this.canvas, this.gameStateManagementService);
+    this.sceneManager = new SceneManager(this.canvas, this.gameStateManagementService, this.store);
 
     this.bindEventListeners();
     this.gameLoop();
@@ -116,8 +120,11 @@ export class StarheadComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** update the state of buttons and results on store changes */
   private subscribeToGameStateChanges(): void {
-    this.gameSubscription = combineLatest(this.gameStateStarted$).subscribe(([gameStarted]) => {
+    this.gameSubscription = combineLatest(this.gameStateStarted$, this.playerPosition$).subscribe((
+      [gameStarted, playerPosition]
+    ) => {
       this.gameStateManagementService.gameState.gameStarted = gameStarted;
+      this.gameStateManagementService.gameState.playerPosition = playerPosition;
     });
   }
 

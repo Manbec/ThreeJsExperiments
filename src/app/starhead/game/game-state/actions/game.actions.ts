@@ -1,3 +1,5 @@
+import {Vector3} from 'three';
+
 export class IsGameStarted {
   static readonly type = '[GameState] Game Is Started';
 }
@@ -7,6 +9,11 @@ export class SetGameStarted {
   constructor(public gameStarted: boolean) {}
 }
 
-export class PlayerHasMoved {
-  static readonly type = '[GameState] Player Has Moved';
+export class GetPlayerPosition {
+  static readonly type = '[PlayerState] Get Player Position';
+}
+
+export class SetPlayerPosition {
+  static readonly type = '[PlayerState] Set Player Position';
+  constructor(public playerPosition: Vector3) {}
 }

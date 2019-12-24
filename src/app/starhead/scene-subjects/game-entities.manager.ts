@@ -1,6 +1,5 @@
-import * as THREE from 'three';
 import {SceneSubject} from './scene.subject';
-import {Camera, Scene, Vector3} from 'three';
+import {Camera, Scene} from 'three';
 import {Player} from './game-entities/player/player.subject';
 import {PlayerShooter} from './game-entities/player/player-shooter.subject';
 import {GameConstants} from '../services/game-state-management.service';
@@ -21,15 +20,14 @@ export class GameEntitiesManager extends SceneSubject {
   constructor(scene: Scene,
               camera: Camera,
               gameConstants: GameConstants,
-              gameState: GameStateModel
-              ) {
+              gameState: GameStateModel) {
     super(scene);
 
     this.playerShooter = new PlayerShooter(scene, gameConstants);
     this.player = new Player(scene, gameState, this.playerShooter, camera);
     this.ghostHead = new GhostHead(scene, gameState);
-    this.ghostLeftHand = new GhostLeftHand(scene);
-    this.ghostRightHand = new GhostRightHand(scene);
+    this.ghostLeftHand = new GhostLeftHand(scene, gameState);
+    this.ghostRightHand = new GhostRightHand(scene, gameState);
     this.gameState = gameState;
 
   }

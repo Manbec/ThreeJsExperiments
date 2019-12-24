@@ -5,6 +5,8 @@ import {Camera} from 'three';
 import {cos, sin, toRad} from './starhead.utils';
 import TWEEN from '@tweenjs/tween.js';
 import {GameStateModel} from './game/game-state/models/game-state.model';
+import {Store} from '@ngxs/store';
+import {SetPlayerPosition} from './game/game-state/actions/game.actions';
 
 export class PlayerAndCameraPositionManager {
 
@@ -27,15 +29,18 @@ export class PlayerAndCameraPositionManager {
   private playerPolarPosition: { horizontalPosition: number; y: any; verticalPosition: number };
 
   cameraAngleStearingOffset = { val: 0 };
+  private store: Store;
 
   constructor(camera: Camera,
               player: Player,
               private gameConstants: GameConstants,
-              gameState: GameStateModel) {
+              gameState: GameStateModel,
+              store: Store) {
 
     this.camera = camera;
     this.player = player;
     this.gameState = gameState;
+    this.store = store;
 
     this.cameraPolarPosition = {
       radius: 0,
@@ -102,7 +107,7 @@ export class PlayerAndCameraPositionManager {
 
     this.player.playerMesh.position.set(this.player.position.x - this.playerPolarPosition.horizontalPosition, this.player.position.y,
       this.player.position.z - this.playerPolarPosition.verticalPosition);
-    this.gameState.playerPosition = this.player.position;
+    this.store.dispatch(new SetPlayerPosition(this.player.position));
 
   }
 

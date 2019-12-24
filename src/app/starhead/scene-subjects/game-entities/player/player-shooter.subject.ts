@@ -42,7 +42,7 @@ export class PlayerShooter extends ShooterComponentSubject {
     }
 
     const bullet = this.bulletsCache.length !== 0 ? this.bulletsCache.pop().reset(originPosition, destinationPosition) :
-      new Bullet(this.scene, originPosition, destinationPosition, this.gameConstants, this.bulletsColor);
+      new Bullet(this.scene, originPosition, destinationPosition, this.bulletsColor);
     this.bullets.push(bullet);
 
     this.lastShootTime = this.currentTime;

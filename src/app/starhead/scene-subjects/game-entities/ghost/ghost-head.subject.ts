@@ -38,6 +38,7 @@ export class GhostHead extends SceneSubject {
   private clips: AnimationClip[];
   private activeAnimationAction: AnimationAction;
   private gameState: GameStateModel;
+  private receivingHit = false;
 
   constructor(scene: Scene, gameState: GameStateModel) {
     super(scene);
@@ -134,20 +135,24 @@ export class GhostHead extends SceneSubject {
   }
 
   receiveHit() {
-    this.gameState.ghostHealth -= 4;
-    console.log('Ghost head receive hit');
-    console.log("PLAY HIT!!!");
+    if (this.receivingHit) {
+      return;
+    }
+
+    this.receivingHit = true;
+    this.gameState.ghostHealth -= 5;
+
     const clip = AnimationClip.findByName(this.clips, this.ghostHeadAnimations.hit.title);
     this.activeAnimationAction = this.ghostAnimationMixer.clipAction( clip );
     this.activeAnimationSpeed = this.ghostHeadAnimations.hit.speed;
     this.activeAnimationAction.play();
     setTimeout(() => {
       this.activeAnimationAction.stop();
-      console.log("PLAY IDLE!!!");
       const clipIdle = AnimationClip.findByName(this.clips, this.ghostHeadAnimations.idle.title);
       this.activeAnimationAction = this.ghostAnimationMixer.clipAction( clipIdle );
       this.activeAnimationSpeed = this.ghostHeadAnimations.idle.speed;
       this.activeAnimationAction.play();
+      this.receivingHit = false;
     }, 980);
   }
 

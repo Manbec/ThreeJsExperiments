@@ -8,6 +8,7 @@ import {PolarControls} from './game/controls/polar.control';
 import {Nebula} from './scene-subjects/nebula';
 import * as _ from 'lodash';
 import {Clock, Color, PerspectiveCamera, Scene, WebGLRenderer} from 'three';
+import {Store} from '@ngxs/store';
 
 export class SceneManager {
 
@@ -31,7 +32,7 @@ export class SceneManager {
   private playerAndCameraPositionManager: PlayerAndCameraPositionManager;
   private controls: { polar: PolarControls; mouse: MouseControls };
 
-  constructor(canvas: HTMLCanvasElement, private gameStateManagementService: GameStateManagementService) {
+  constructor(canvas: HTMLCanvasElement, private gameStateManagementService: GameStateManagementService, store: Store) {
 
     this.canvas = canvas;
 
@@ -57,7 +58,8 @@ export class SceneManager {
       this.camera,
       this.gameEntitiesManager.player,
       gameStateManagementService.gameConstants,
-      gameStateManagementService.gameState
+      gameStateManagementService.gameState,
+      store
     );
 
     this.controls = this.buildControls(

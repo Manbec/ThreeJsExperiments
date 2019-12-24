@@ -6,7 +6,7 @@ import {defaultGhostInitalHealth, defaultInitalHealth, GameStateModel} from './m
 import {Vector3} from 'three';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {GameStateManagementService} from '../../services/game-state-management.service';
-import {IsGameStarted, SetGameStarted} from './actions/game.actions';
+import {GetPlayerPosition, IsGameStarted, SetGameStarted, SetPlayerPosition} from './actions/game.actions';
 
 /** default state */
 const defaultGameState = (): GameStateModel => {
@@ -31,11 +31,13 @@ export class GameState {
     return state.gameStarted;
   }
 
+  @Selector()
+  static playerPosition(state: GameStateModel): Vector3 {
+    return state.playerPosition;
+  }
+
   constructor(private gameStateManagementService: GameStateManagementService) { }
 
-  /** get the list of orders from api
-   *  and convert it to frontend orders model
-   */
   @Action(IsGameStarted)
   isGameStarted({ getState, patchState }: StateContext<GameStateModel>) {
     const state: GameStateModel = getState();
@@ -46,6 +48,21 @@ export class GameState {
   setFilter({ patchState }: StateContext<GameStateModel>, { gameStarted }: SetGameStarted) {
     patchState({
       gameStarted
+    });
+  }
+
+
+  @Action(GetPlayerPosition)
+  getPlayerPosition({ getState, patchState }: StateContext<GameStateModel>) {
+    const state: GameStateModel = getState();
+    return state.gameStarted;
+  }
+
+
+  @Action(SetPlayerPosition)
+  setPlayerPosition({ patchState }: StateContext<GameStateModel>, { playerPosition }: SetPlayerPosition) {
+    patchState({
+      playerPosition
     });
   }
 

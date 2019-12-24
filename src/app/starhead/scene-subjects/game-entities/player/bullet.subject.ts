@@ -18,15 +18,12 @@ export class Bullet extends ShooterComponentSubject {
   private readonly maxScaleX: number;
   private readonly maxScaleY: number;
   private readonly maxScaleZ: number;
-  private gameConstants: GameConstants;
 
-  constructor(scene: Scene,
-              originPosition: Vector3, destinationPosition: Vector3,
-              gameConstants: GameConstants, color: string) {
+  constructor(scene: Scene, originPosition: Vector3,
+              destinationPosition: Vector3, color: string) {
     super(scene);
 
     this.scene = scene;
-    this.gameConstants = gameConstants;
     this.blueprintBulletPlayer  = new Mesh( this.geometryBulletPlayer, this.materialBulletPlayer );
 
     this.materialBulletPlayer.color = new Color(color);

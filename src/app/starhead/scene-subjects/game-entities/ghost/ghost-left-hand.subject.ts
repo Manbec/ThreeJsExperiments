@@ -9,6 +9,8 @@ import {_Math} from 'three/src/math/Math';
 import degToRad = _Math.degToRad;
 import TWEEN from '@tweenjs/tween.js';
 import {AnimationClip} from 'three';
+import {Vector3} from 'three';
+import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class GhostLeftHand extends SceneSubject {
 
@@ -42,10 +44,16 @@ export class GhostLeftHand extends SceneSubject {
   private stretchHandInterval: NodeJS.Timeout;
   private clips: AnimationClip[];
   private activeAnimationAction: AnimationAction;
+  private shootInterval: NodeJS.Timeout;
+  private gameState: GameStateModel;
+  private bullet: Bullet;
+  bulletsColor = '#FF0000';
+  private shooting: boolean;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: THREE.Scene, gameState: GameStateModel) {
     super(scene);
     this.scene = scene;
+    this.gameState = gameState;
     this.createGhostLeftHand();
   }
 
@@ -98,7 +106,20 @@ export class GhostLeftHand extends SceneSubject {
         this.activeAnimationAction.play();
         this.appear();
         this.floaty();
+        this.beginShooting();
       }, 1000);
+
+
+      const originPosition = new Vector3(
+        this.ghostLeftHand.position.x,
+        this.ghostLeftHand.position.y + 5.5,
+        this.ghostLeftHand.position.z - 2);
+      const destinationPosition = new Vector3(
+        this.gameState.playerPosition.x,
+        this.gameState.playerPosition.y + 5.5,
+        this.gameState.playerPosition.z - 2);
+
+      this.bullet = new Bullet(this.scene, originPosition, destinationPosition, this.bulletsColor);
 
     });
 
@@ -134,11 +155,52 @@ export class GhostLeftHand extends SceneSubject {
       .easing(TWEEN.Easing.Cubic.InOut)
       .start();
     this.stretchHandInterval = setInterval(() => {
-    this.stretchHand();
+      this.stretchHand();
     }, 26000);
   }
 
+  beginShooting() {
+    this.shootInterval = setInterval(() => {
+      this.shoot();
+    }, 2000);
+  }
+
+  shoot() {
+    if (this.shooting) {
+      return;
+    }
+    this.shooting = true;
+    const shootClip = AnimationClip.findByName(this.clips, this.ghostHandAnimations.shoot.title);
+    this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( shootClip );
+    this.activeAnimationSpeed = this.ghostHandAnimations.idle2.speed;
+    this.activeAnimationAction.play();
+    setTimeout(() => {
+      this.activeAnimationAction.stop();
+      const clipIdle = AnimationClip.findByName(this.clips, this.ghostHandAnimations.idle.title);
+      this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( clipIdle );
+      this.activeAnimationSpeed = this.ghostHandAnimations.idle.speed;
+      this.activeAnimationAction.play();
+      this.shooting = false;
+    }, 4000);
+
+    setTimeout(() => {
+      const originPosition = new Vector3(
+        this.ghostLeftHand.position.x,
+        this.ghostLeftHand.position.y + 5.5,
+        this.ghostLeftHand.position.z - 2);
+      const destinationPosition = new Vector3(
+        this.gameState.playerPosition.x,
+        this.gameState.playerPosition.y + 5.5,
+        this.gameState.playerPosition.z - 2);
+      this.bullet.reset(originPosition, destinationPosition);
+    }, 1600);
+
+  }
+
   stretchHand() {
+    if (this.shooting) {
+      return;
+    }
     const clip = AnimationClip.findByName(this.clips, this.ghostHandAnimations.idle2.title);
     this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( clip );
     this.activeAnimationSpeed = this.ghostHandAnimations.idle2.speed;

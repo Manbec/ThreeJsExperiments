@@ -15,7 +15,7 @@ import {CommonModule} from '@angular/common';
     CommonModule,
     StarheadRoutingModule,
     NgxsModule.forRoot([...stateList]),
-    NgxsLoggerPluginModule.forRoot(),
+    // NgxsLoggerPluginModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
   ]
 })

@@ -9,6 +9,7 @@ import {_Math} from 'three/src/math/Math';
 import degToRad = _Math.degToRad;
 import TWEEN from '@tweenjs/tween.js';
 import {AnimationClip} from 'three';
+import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class GhostRightHand extends SceneSubject {
 
@@ -43,10 +44,12 @@ export class GhostRightHand extends SceneSubject {
   private stretchHandInterval: NodeJS.Timeout;
   private activeAnimationAction: AnimationAction;
   private clips: AnimationClip[];
+  private gameState: GameStateModel;
 
-  constructor(scene: THREE.Scene) {
+  constructor(scene: THREE.Scene, gameState: GameStateModel) {
     super(scene);
     this.scene = scene;
+    this.gameState = gameState;
     console.log('constructor right hand');
     this.createGhostRightHand();
   }
