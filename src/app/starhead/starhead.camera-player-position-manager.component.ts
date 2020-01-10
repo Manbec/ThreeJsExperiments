@@ -75,6 +75,7 @@ export class PlayerAndCameraPositionManager {
     }
 
     this.player.playerMesh.position.set(sin(time * 4) / 10,  sin(time / 4) / 20, sin(time * 2) / 10);
+    this.store.dispatch(new SetPlayerPosition(this.player.playerMesh.position));
 
     // camera static movement
     this.cameraPolarPosition.radius += sin(time) / 100;
@@ -107,7 +108,6 @@ export class PlayerAndCameraPositionManager {
 
     this.player.playerMesh.position.set(this.player.position.x - this.playerPolarPosition.horizontalPosition, this.player.position.y,
       this.player.position.z - this.playerPolarPosition.verticalPosition);
-    this.store.dispatch(new SetPlayerPosition(this.player.position));
 
   }
 

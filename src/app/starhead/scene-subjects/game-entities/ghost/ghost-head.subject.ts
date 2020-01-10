@@ -8,7 +8,6 @@ import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class GhostHead extends SceneSubject {
 
-  bullets: Bullet[] = [];
   private scene: Scene;
   public ghostHead: any;
   private ghostGroup: Object3D;
@@ -39,6 +38,9 @@ export class GhostHead extends SceneSubject {
   private activeAnimationAction: AnimationAction;
   private gameState: GameStateModel;
   private receivingHit = false;
+  private bullet: Bullet;
+  bulletsColor = '#FF0000';
+  private shooting: boolean;
 
   constructor(scene: Scene, gameState: GameStateModel) {
     super(scene);
@@ -56,7 +58,13 @@ export class GhostHead extends SceneSubject {
   }
 
   public getBullets(): Bullet[] {
-    return this.bullets;
+    const bullets = [];
+
+    if (this.bullet) {
+      bullets.push(this.bullet);
+    }
+
+    return bullets;
   }
 
   private createGhostHead() {

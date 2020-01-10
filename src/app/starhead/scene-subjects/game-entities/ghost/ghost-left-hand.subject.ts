@@ -11,10 +11,10 @@ import TWEEN from '@tweenjs/tween.js';
 import {AnimationClip} from 'three';
 import {Vector3} from 'three';
 import {GameStateModel} from '../../../game/game-state/models/game-state.model';
+import radToDeg = _Math.radToDeg;
 
 export class GhostLeftHand extends SceneSubject {
 
-  bullets: Bullet[] = [];
   private scene: Scene;
   public ghostLeftHand: any;
   private ghostGroup: Object3D;
@@ -37,7 +37,7 @@ export class GhostLeftHand extends SceneSubject {
     },
     shoot: {
       title: 'Armature|Shoot',
-      speed: 0.05
+      speed: 0.08
     }
   };
   private handMeshMaterial: Material;
@@ -63,10 +63,20 @@ export class GhostLeftHand extends SceneSubject {
       this.ghostLeftHandAnimationMixer.update(this.activeAnimationSpeed);
     }
 
+    if (this.bullet) {
+      this.bullet.update(elapsedTime);
+    }
+
   }
 
   public getBullets(): Bullet[] {
-    return this.bullets;
+    const bullets = [];
+
+    if (this.bullet) {
+      bullets.push(this.bullet);
+    }
+
+    return bullets;
   }
 
   private createGhostLeftHand() {
@@ -119,7 +129,7 @@ export class GhostLeftHand extends SceneSubject {
         this.gameState.playerPosition.y + 5.5,
         this.gameState.playerPosition.z - 2);
 
-      this.bullet = new Bullet(this.scene, originPosition, destinationPosition, this.bulletsColor);
+      this.bullet = new Bullet(this.scene, originPosition, destinationPosition, this.bulletsColor, 170);
 
     });
 
@@ -166,7 +176,7 @@ export class GhostLeftHand extends SceneSubject {
   }
 
   shoot() {
-    if (this.shooting) {
+    if (this.shooting || !this.gameState.gameStarted) {
       return;
     }
     this.shooting = true;
@@ -174,6 +184,30 @@ export class GhostLeftHand extends SceneSubject {
     this.activeAnimationAction = this.ghostLeftHandAnimationMixer.clipAction( shootClip );
     this.activeAnimationSpeed = this.ghostHandAnimations.idle2.speed;
     this.activeAnimationAction.play();
+
+    // backup original rotation
+    const startRotation = new THREE.Euler().copy( this.ghostLeftHand.rotation );
+    // final rotation (with lookAt)
+    this.ghostLeftHand.lookAt( this.gameState.playerPosition );
+    const endRotation = new THREE.Euler().copy( this.ghostLeftHand.rotation );
+
+    // revert to original rotation
+    this.ghostLeftHand.rotation.copy( startRotation );
+
+    console.log(radToDeg(startRotation.x), radToDeg(endRotation.x));
+    console.log(radToDeg(startRotation.y), radToDeg(endRotation.y));
+
+    // Tween
+    new TWEEN.Tween( this.ghostLeftHand.rotation ).to( {
+      x: endRotation.x,
+      y: endRotation.y,
+      z: endRotation.z - degToRad(120)
+    }, 600 ).start();
+
+    setTimeout(() => {
+      this.ghostLeftHand.rotation.z = this.ghostLeftHand.rotation.z - degToRad(120);
+    });
+
     setTimeout(() => {
       this.activeAnimationAction.stop();
       const clipIdle = AnimationClip.findByName(this.clips, this.ghostHandAnimations.idle.title);
@@ -181,7 +215,18 @@ export class GhostLeftHand extends SceneSubject {
       this.activeAnimationSpeed = this.ghostHandAnimations.idle.speed;
       this.activeAnimationAction.play();
       this.shooting = false;
-    }, 4000);
+
+      // console.log("AJAKAA", radToDeg(this.ghostLeftHand.rotation.x), radToDeg(Math.PI * 1.5));
+      // return;
+      const resetHandTween = new TWEEN.Tween(this.ghostLeftHand.rotation)
+        .to({
+          x: - degToRad(90),
+          y: 0,
+          z: -degToRad(10)
+        }, 500)
+        .start();
+
+    }, 3000);
 
     setTimeout(() => {
       const originPosition = new Vector3(
@@ -190,10 +235,10 @@ export class GhostLeftHand extends SceneSubject {
         this.ghostLeftHand.position.z - 2);
       const destinationPosition = new Vector3(
         this.gameState.playerPosition.x,
-        this.gameState.playerPosition.y + 5.5,
+        this.gameState.playerPosition.y,
         this.gameState.playerPosition.z - 2);
       this.bullet.reset(originPosition, destinationPosition);
-    }, 1600);
+    }, 400);
 
   }
 

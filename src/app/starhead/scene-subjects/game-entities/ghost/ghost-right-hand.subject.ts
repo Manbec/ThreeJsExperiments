@@ -13,7 +13,6 @@ import {GameStateModel} from '../../../game/game-state/models/game-state.model';
 
 export class GhostRightHand extends SceneSubject {
 
-  bullets: Bullet[] = [];
   private scene: Scene;
   public ghostRightHand: any;
   private ghostGroup: Object3D;
@@ -45,6 +44,9 @@ export class GhostRightHand extends SceneSubject {
   private activeAnimationAction: AnimationAction;
   private clips: AnimationClip[];
   private gameState: GameStateModel;
+  private bullet: Bullet;
+  bulletsColor = '#FF0000';
+  private shooting: boolean;
 
   constructor(scene: THREE.Scene, gameState: GameStateModel) {
     super(scene);
@@ -63,7 +65,13 @@ export class GhostRightHand extends SceneSubject {
   }
 
   public getBullets(): Bullet[] {
-    return this.bullets;
+    const bullets = [];
+
+    if (this.bullet) {
+      bullets.push(this.bullet);
+    }
+
+    return bullets;
   }
 
   private createGhostRightHand() {
