@@ -26,7 +26,7 @@
     "lodash": "^4.17.15",
     "physijs-webpack": "^0.1.3",
     "rxjs": "~6.5.2",
-    "three": "^0.107.0",
+    "three": "^0.125.0",
     "three-gltf-loader": "^1.107.0",
     "three-obj-loader": "^1.1.3",
     "tslib": "^1.10.0",
